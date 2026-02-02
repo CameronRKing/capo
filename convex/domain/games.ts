@@ -5,7 +5,7 @@
  * Provides access to current game phase and submission status.
  */
 
-import { queryWithRLS } from "../services/rowLevelSecurity";
+import { queryWithRLS, mutationWithRLS } from "../services/rowLevelSecurity";
 import { v } from "convex/values";
 
 /**
@@ -135,5 +135,25 @@ export const getPhaseStatus = queryWithRLS({
     }
 
     return null;
+  },
+});
+
+/**
+ * Mutation: Create a new game
+ *
+ * Creates a new game with the specified parameters.
+ * Used primarily for testing purposes.
+ */
+export const create = mutationWithRLS({
+  args: {
+    name: v.string(),
+    length: v.number(),
+    currentQuarter: v.number(),
+    currentPhase: v.union(v.literal("hiring"), v.literal("leadership")),
+    status: v.union(v.literal("setup"), v.literal("active"), v.literal("completed")),
+  },
+  handler: async (ctx, args) => {
+    const gameId = await ctx.db.insert("games", args);
+    return gameId;
   },
 });

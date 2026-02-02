@@ -5,6 +5,12 @@ import { api } from "./_generated/api";
 // Domain functions
 export * from "./domain/index";
 
+// Compilation functions
+export * from "./compilation/index";
+
+// Test helper functions (only available in test environment)
+export * from "./test/index";
+
 // Write your Convex functions in any file inside this directory (`convex`).
 // See https://docs.convex.dev/functions for more.
 

@@ -103,3 +103,30 @@ export const bulkUpdateRepSettings = mutationWithRLS({
     return updates.length;
   },
 });
+
+/**
+ * Mutation: Create a new active rep
+ *
+ * Creates a new active rep record for testing.
+ */
+export const create = mutationWithRLS({
+  args: {
+    companyId: v.id("companies"),
+    quarter: v.number(),
+    repId: v.string(),
+    willLetGo: v.boolean(),
+    individualHours: v.number(),
+    leadershipBehavior: v.union(
+      v.literal("Praise"),
+      v.literal("Punishment"),
+      v.literal("Rules"),
+      v.literal("Goals"),
+      v.literal("Support")
+    ),
+    territories: v.array(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const repId = await ctx.db.insert("activeReps", args);
+    return repId;
+  },
+});
