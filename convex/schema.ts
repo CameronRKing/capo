@@ -114,6 +114,22 @@ export default defineSchema({
     .index("by_company_quarter", ["companyId", "quarter"]),
 
   // --------------------------------------------------
+  // Territory Assignments (Per Company, Per Quarter)
+  // --------------------------------------------------
+  territories: defineTable({
+    companyId: v.id("companies"),
+    quarter: v.number(),
+    assignments: v.array(v.object({
+      countyId: v.number(),
+      repId: v.id("activeReps"),
+    })),
+    isSubmitted: v.boolean(),
+    submittedBy: v.optional(v.id("users")),
+    submittedAt: v.optional(v.number()),
+  })
+    .index("by_company_quarter", ["companyId", "quarter"]),
+
+  // --------------------------------------------------
   // Active Reps (Per Company, Per Quarter)
   // --------------------------------------------------
   activeReps: defineTable({

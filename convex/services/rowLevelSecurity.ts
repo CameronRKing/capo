@@ -230,6 +230,32 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
       },
     },
 
+    // Territory assignments (leadership decisions)
+    territories: {
+      read: async (ctx, territory) => {
+        if (user.role === "admin") return true;
+        // Teachers read territories for all companies in their game
+        if (user.role === "teacher") {
+          const company = await ctx.db.get(territory.companyId);
+          return company?.gameId === user.gameId;
+        }
+        // Students read only their company's territories
+        return territory.companyId === user.companyId;
+      },
+      insert: async (ctx, territory) => {
+        // Students can create territories for their company
+        if (user.role === "student") return territory.companyId === user.companyId;
+        return user.role === "admin" || user.role === "teacher";
+      },
+      modify: async (ctx, territory) => {
+        // Students can modify their company's territories
+        if (user.role === "student" && territory.companyId === user.companyId) return true;
+        // Teachers can read but not modify student territories
+        if (user.role === "teacher") return false;
+        return user.role === "admin";
+      },
+    },
+
     // Users table (admins and self-access)
     users: {
       read: async (ctx, targetUser) => {
