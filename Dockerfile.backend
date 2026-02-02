@@ -11,4 +11,4 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm install -g convex && mkdir -p /root/.convex
 EXPOSE 3210 3211
-CMD ["npm", "run", "dev:backend"]
+CMD ["npm", "run", "dev:backend:docker"]

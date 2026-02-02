@@ -45,10 +45,9 @@ services:
       - ~/.convex:/root/.convex
       - /app/node_modules
       - ./logs/backend:/app/logs
+      - ./.env.docker:/app/.env.docker
     environment:
       - CONVEX_DEPLOYMENT=anonymous:anonymous-nutopia
-      - CONVEX_LOCAL_ONLY=1
-      - CONVEX_ENABLE_FILE_POLLING=1
     networks:
       - capo-network
     logging:
