@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Frontend service (Vite + React)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: dev
+    container_name: capo-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.vite
+      - ./logs/frontend:/app/logs
+    environment:
+      - VITE_HOST=0.0.0.0
+      - VITE_CONVEX_URL=http://backend:3210
+    stdin_open: true
+    tty: true
+    networks:
+      - capo-network
+    depends_on:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,environment"
+        tag: "{{.Name}}/{{.ID}}"
+
+  # Backend service (Convex)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      target: dev
+    container_name: capo-backend
+    ports:
+      - "3210:3210"
+      - "3211:3211"
+    volumes:
+      - ./convex:/app/convex
+      - convex-data:/root/.convex
+      - /app/node_modules
+      - ./logs/backend:/app/logs
+    environment:
+      - CONVEX_LOCAL_ONLY=1
+      - CONVEX_ENABLE_FILE_POLLING=1
+    networks:
+      - capo-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,environment"
+        tag: "{{.Name}}/{{.ID}}"
+
+networks:
+  capo-network:
+    driver: bridge
+
+volumes:
+  convex-data:
+    driver: local

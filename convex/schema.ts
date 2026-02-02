@@ -268,7 +268,7 @@ export default defineSchema({
     population: v.string(), // Keep as string from source
     path: v.string(), // SVG path string
   })
-    .index("by_id", ["id"]),
+    .index("by_county_id", ["id"]),
 
   // --------------------------------------------------
   // Real-Time Collaboration

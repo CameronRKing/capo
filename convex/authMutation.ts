@@ -5,9 +5,10 @@
  * These wrap the @convex-dev/auth server functions.
  */
 
-"use node";
+// "use node";  // Temporarily disabled due to Node version compatibility issue
 
 import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 import { auth } from "./auth/config";
 
 /**

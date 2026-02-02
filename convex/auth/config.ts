@@ -7,7 +7,7 @@
  * Example: https://github.com/get-convex/convex-auth-with-role-based-permissions
  */
 
-"use node";
+// "use node";  // Temporarily disabled due to Node version compatibility issue
 
 import { convexAuth } from "@convex-dev/auth/server";
 // import { Resend } from "./email";
