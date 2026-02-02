@@ -23,7 +23,7 @@ import {
  * 
  * Full business logic from legacy codebase will be implemented post-MVP.
  */
-export const compileLeadershipDecisions = action({
+export const _compileLeadershipDecisions = action({
   args: {
     gameId: v.id("games"),
     quarter: v.number(),

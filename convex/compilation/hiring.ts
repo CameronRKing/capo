@@ -15,7 +15,7 @@ import { SALES_CONTEST_MULTIPLIER } from "../domain/decisions/validators";
  *
  * Full business logic from legacy codebase will be implemented post-MVP.
  */
-export const compileHiringDecisions = action({
+export const _compileHiringDecisions = action({
   args: {
     gameId: v.id("games"),
     quarter: v.number(),

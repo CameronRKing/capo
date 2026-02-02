@@ -8,6 +8,9 @@ export * from "./domain/index";
 // Compilation functions
 export * from "./compilation/index";
 
+// Admin functions
+export * from "./admin/index";
+
 // Test helper functions (only available in test environment)
 export * from "./test/index";
 

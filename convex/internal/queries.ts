@@ -54,3 +54,15 @@ export const getActiveReps = query({
       .collect();
   },
 });
+
+export const getLeadershipDecision = query({
+  args: { companyId: v.id("companies"), quarter: v.number() },
+  handler: async (ctx, { companyId, quarter }) => {
+    return await ctx.db
+      .query("leadershipDecisions")
+      .withIndex("by_company_quarter", (q) =>
+        q.eq("companyId", companyId).eq("quarter", quarter)
+      )
+      .first();
+  },
+});
