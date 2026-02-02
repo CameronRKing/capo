@@ -30,7 +30,8 @@
     "convex": "^1.31.0",
     "convex-helpers": "^0.1.109",
     "react": "^19.2.1",
-    "react-dom": "^19.2.1"
+    "react-dom": "^19.2.1",
+    "resend": "^6.9.1"
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.1.1",
