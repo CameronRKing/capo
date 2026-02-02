@@ -3,9 +3,8 @@
  * @route /student/
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { ConvexProvider } from "convex/react";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { RouterProvider } from "@tanstack/react-router";
@@ -15,25 +14,13 @@ import { RouterProvider } from "@tanstack/react-router";
 // you would import the actual component and mock the Convex queries.
 
 describe("Student Navigation Hub", () => {
-  let queryClient: QueryClient;
-  let mockConvexClient: any;
-
-  beforeEach(() => {
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
-    // Mock Convex client
-    mockConvexClient = {
-      query: vi.fn(),
-      mutation: vi.fn(),
-      action: vi.fn(),
-    };
-  });
+  // Setup: Convex provides its own query context via ConvexProvider
+  // No QueryClient needed - Convex handles this internally
+  const mockConvexClient = {
+    query: vi.fn(),
+    mutation: vi.fn(),
+    action: vi.fn(),
+  };
 
   /**
    * Test: Component renders loading state
