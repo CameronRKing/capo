@@ -1,35 +1,39 @@
 # Services Management
 
-## Critical Rule
+## Architecture
 
-**NEVER run services directly.**
+**Frontend**: Docker container (Vite dev server on port 5173)
+**Backend**: Host process (Convex local backend on port 3210)
 
-**Forbidden**:
-- `npm run dev`
-- `npx vite`
-- `npx convex dev`
+Frontend container connects to backend via `host.docker.internal:3210`.
 
-**Required**:
-- Use Docker containers ONLY
-- All operations through `npm run docker:*` scripts
+---
 
-## Commands
+## Critical Rule: Backend Process Ownership
+
+**THE BACKEND IS OWNED BY THE USER.**
+
+Agents **MUST** follow this workflow:
+
+1. **ASK PERMISSION** before starting backend: "May I start the backend server?"
+2. **START IT YOURSELF** if permission granted: `npm run dev:backend &`
+3. **KILL IT AUTOMATICALLY** when task completes: `pkill -f "convex dev"`
+
+**NEVER** leave backend processes running after your task. Control reverts to the user when you finish.
+
+---
+
+## Docker Commands (Frontend Only)
 
 | Operation | Command |
 |-----------|---------|
 | Status | `npm run docker:ps` |
-| Start all | `npm run docker:start:all` |
 | Start frontend | `npm run docker:start:frontend` |
-| Start backend | `npm run docker:start:backend` |
-| Stop all | `npm run docker:stop:all` |
 | Stop frontend | `npm run docker:stop:frontend` |
-| Stop backend | `npm run docker:stop:backend` |
-| Restart all | `npm run docker:restart:all` |
 | Restart frontend | `npm run docker:restart:frontend` |
-| Restart backend | `npm run docker:restart:backend` |
 | Frontend logs | `npm run docker:taillogs:frontend` |
-| Backend logs | `npm run docker:taillogs:backend` |
-| Custom line count | `npm run docker:taillogs:frontend -- 50` |
+
+---
 
 ## Endpoints
 
@@ -37,58 +41,69 @@
 - **Backend**: http://localhost:3210
 - **Dashboard**: http://localhost:3210/_dash
 
+---
+
 ## Basic Workflow
 
 ```bash
+# Start frontend (Docker)
+npm run docker:start:frontend
+
+# Start backend (host) - AGENTS MUST ASK FIRST
+npm run dev:backend &
+
 # Check status
 npm run docker:ps
-
-# Start services
-npm run docker:start:all
-
-# View logs if needed
-npm run docker:taillogs:backend
+lsof -i :3210  # Verify backend running
 
 # Stop when done
-npm run docker:stop:all
+npm run docker:stop:frontend
+pkill -f "convex dev"  # Agents MUST do this automatically
 ```
+
+---
 
 ## Troubleshooting
 
 [Full troubleshooting guide](/memory-bank/troubleshooting.md)
 
-**Quick checks**:
-1. Check logs: `npm run docker:taillogs:frontend` or `:backend`
-2. Check status: `npm run docker:ps`
-3. Restart affected service: `npm run docker:restart:*`
-4. If broken: `npm run docker:stop:all && npm run docker:start:all`
+**Backend issues**:
+- Port 3210 in use? `lsof -i :3210` then `kill -9 <PID>`
+- Backend won't start? Check `~/.convex/local.json` exists
+- Backend not responding? `curl http://localhost:3210/_health`
 
-## Initial Setup
+**Frontend issues**:
+- Container won't start? `npm run docker:taillogs:frontend`
+- Can't reach backend? Check `VITE_CONVEX_URL=http://host.docker.internal:3210`
 
-[One-time setup instructions](/memory-bank/initial-setup.md)
+---
 
-Required files:
-- `~/.convex/local.json` with `{"localDeployment": true}`
-- `.env.docker` in project root
+## Agent Safety Rules
+
+**Before starting backend**:
+- ✅ ASK: "May I start the backend server?"
+- ✅ WAIT for user permission
+- ❌ DON'T start without asking
+
+**When task completes**:
+- ✅ KILL: `pkill -f "convex dev"`
+- ✅ VERIFY: `lsof -i :3210` returns nothing
+- ✅ REPORT: "Backend stopped, control reverted to you"
+- ❌ DON'T leave processes running
+
+**Never**:
+- Run `npm run dev` (starts both services)
+- Leave background processes after task completion
+- Assume backend is available without checking
+
+---
 
 ## Architecture & Data
 
 [Architecture details](/memory-bank/architecture.md) | [Data management](/memory-bank/data-management.md)
 
 **Key points**:
-- Database persists in `~/.convex` (host directory)
-- Hot-reload enabled for code changes
-- Restart only for dependency changes or environment variables
-
-## Safety Rules
-
-**Always**:
-- Check status before starting
-- Use npm scripts for all operations
-- View logs when troubleshooting
-- Stop services when done
-
-**Never**:
-- Run `npm run dev` or `npx` commands directly
-- Use `docker` commands directly (use npm scripts)
-- Run `docker compose down -v` unless explicitly instructed
+- Backend data persists in `~/.convex` (host directory)
+- Frontend hot-reload enabled
+- Frontend connects to backend via `host.docker.internal:3210`
+- Backend runs on host, not in container

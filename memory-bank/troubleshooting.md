@@ -1,124 +1,435 @@
-# Troubleshooting Guide
+# Troubleshooting
 
-## Service Won't Start
+## Backend Issues
 
+### Backend won't start
+
+**Symptoms**: `npm run dev:backend` fails or exits immediately
+
+**Diagnose**:
 ```bash
-# Check current status
-npm run docker:ps
+# Check if port 3210 is already in use
+lsof -i :3210
 
-# View logs to see error
-npm run docker:taillogs:frontend   # or :backend
+# Check if local.json exists
+cat ~/.convex/local.json
+# Should contain: {"localDeployment": true}
 
-# Try restarting
-npm run docker:restart:all
-
-# If still failing, complete restart
-npm run docker:stop:all
-npm run docker:start:all
+# Try running with verbose output
+CONVEX_LOCAL_ONLY=1 npx convex dev --local
 ```
 
-## Port Already in Use
+**Solutions**:
 
+1. **Port conflict**:
+   ```bash
+   # Kill existing backend
+   pkill -f "convex dev"
+   # Or kill specific PID
+   kill -9 <PID from lsof>
+   ```
+
+2. **Missing local.json**:
+   ```bash
+   mkdir -p ~/.convex
+   echo '{"localDeployment": true}' > ~/.convex/local.json
+   ```
+
+3. **Corrupted deployment state**:
+   ```bash
+   # Backup first
+   cp -r ~/.convex ~/.convex.backup
+   # Remove deployment state
+   rm -rf ~/.convex/anonymous-convex-backend-state
+   # Restart backend (will reinitialize)
+   npm run dev:backend &
+   ```
+
+---
+
+### Backend starts but frontend can't connect
+
+**Symptoms**: Frontend shows network errors, can't reach Convex backend
+
+**Diagnose**:
 ```bash
-# Check what's using the port
-lsof -i :5173  # Frontend
-lsof -i :3210  # Backend
+# Check if backend is responding
+curl http://localhost:3210/_health
 
-# Stop the conflicting process, then restart services
-npm run docker:restart:all
+# Check frontend environment variable
+docker compose exec frontend env | grep CONVEX_URL
+# Should be: VITE_CONVEX_URL=http://host.docker.internal:3210
 ```
 
-## Changes Not Reflecting
+**Solutions**:
 
+1. **Wrong CONVEX_URL**:
+   - Edit `docker-compose.yml`
+   - Set `VITE_CONVEX_URL=http://host.docker.internal:3210`
+   - Restart: `npm run docker:restart:frontend`
+
+2. **Backend not running**:
+   ```bash
+   # Check if backend process exists
+   ps aux | grep "convex dev"
+   # Start if not running (ASK PERMISSION FIRST)
+   ```
+
+3. **Firewall blocking**:
+   - Check if port 3210 is accessible from container
+   - Test: `docker compose exec frontend curl http://host.docker.internal:3210/_health`
+
+---
+
+### Backend not responding
+
+**Symptoms**: Backend process running but not responding to requests
+
+**Diagnose**:
 ```bash
-# Verify volume mounts are working
-docker compose config | grep -A 10 volumes
+# Check if process is running
+ps aux | grep "convex dev"
 
-# Restart the service
-npm run docker:restart:frontend   # or :backend
+# Check if port is listening
+lsof -i :3210
 
-# If still not working, rebuild
-docker compose down
-docker compose up --build -d
+# Check health endpoint
+curl http://localhost:3210/_health
+
+# Check backend logs (if running in terminal)
+# Look for errors in console output
 ```
 
-## Database Data Lost
+**Solutions**:
 
-**Expected**: Database data persists in `~/.convex` (host directory), surviving container restarts.
+1. **Restart backend**:
+   ```bash
+   pkill -f "convex dev"
+   # Wait a few seconds
+   npm run dev:backend &
+   ```
 
-**If Data is Lost**:
-1. Verify directory exists: `ls -la ~/.convex`
-2. Verify mount in container: `docker exec capo-backend-1 ls -la /root/.convex`
-3. Check `local.json` exists: `cat ~/.convex/local.json`
-4. If directory was deleted, data is gone (restore from backup if available)
+2. **Check for errors**:
+   - Look at console output where backend is running
+   - Check for schema validation errors
+   - Check for function errors
 
-## Backend Prompts for Login
+3. **Database locked**:
+   ```bash
+   # Kill all Convex processes
+   pkill -f "convex"
+   # Wait for SQLite lock to release (usually immediate)
+   # Restart backend
+   npm run dev:backend &
+   ```
 
-Backend runs non-interactively. If it prompts:
+---
 
-1. Verify `~/.convex/local.json` exists with `{"localDeployment": true}`
-2. Check that `.env.docker` is mounted in `docker-compose.yml`
-3. Verify the `dev:backend:docker` script uses `--configure existing --env-file .env.docker`
+## Frontend Issues
 
-## Container Restart Loops
+### Container won't start
 
+**Symptoms**: `npm run docker:start:frontend` fails or exits immediately
+
+**Diagnose**:
 ```bash
-# Check logs immediately
-npm run docker:taillogs:backend -- 50
+# Check container status
+docker compose ps
 
-# Common causes:
-# - Syntax errors in code
-# - Missing dependencies
-# - Invalid environment variables
-# - Port conflicts
+# Check logs
+npm run docker:taillogs:frontend
+
+# Check for port conflicts
+lsof -i :5173
 ```
 
-## Out of Memory Errors
+**Solutions**:
 
+1. **Port 5173 in use**:
+   ```bash
+   # Kill process using port
+   kill -9 <PID from lsof>
+   # Restart frontend
+   npm run docker:restart:frontend
+   ```
+
+2. **Build error**:
+   ```bash
+   # Rebuild with --no-cache
+   docker compose build --no-cache frontend
+   docker compose up -d frontend
+   ```
+
+3. **Volume mount issue**:
+   ```bash
+   # Check if volumes are mounted correctly
+   docker compose config | grep -A 10 volumes
+   # Verify current directory is correct
+   pwd
+   ```
+
+---
+
+### Frontend starts but shows errors
+
+**Symptoms**: Container running but browser shows errors
+
+**Diagnose**:
 ```bash
-# Check resource usage
-docker stats
+# Check logs
+npm run docker:taillogs:frontend
 
-# Services typically use:
-# - Frontend: 200-300MB RAM
-# - Backend: 100-200MB RAM
+# Check if Vite is responding
+curl http://localhost:5173
 
-# If exceeding limits, restart services
-npm run docker:restart:all
+# Check console in browser DevTools
 ```
 
-## Network Issues Between Services
+**Solutions**:
 
+1. **Vite build error**:
+   - Check logs for compilation errors
+   - Fix TypeScript/lint errors
+   - Container will hot-reload on fix
+
+2. **Can't reach backend**:
+   - See "Backend starts but frontend can't connect" above
+
+3. **Module resolution error**:
+   ```bash
+   # Rebuild container
+   docker compose up --build -d frontend
+   ```
+
+---
+
+### Hot-reload not working
+
+**Symptoms**: File changes not reflecting in browser
+
+**Diagnose**:
 ```bash
-# Verify network exists
-docker network ls | grep capo
+# Check if volume mounts are working
+docker compose exec frontend ls -la /app
 
-# Inspect network
-docker network inspect capo-network
-
-# Services must be on same network
-# Frontend reaches backend: http://backend:3210
-# Backend reaches frontend: http://frontend:5173
+# Check if file changes are visible in container
+docker compose exec frontend cat /app/package.json
 ```
 
-## Volume Mount Issues
+**Solutions**:
 
+1. **Volume mount issue**:
+   - Verify `.` is mounted to `/app`
+   - Check file permissions
+   - Restart container: `npm run docker:restart:frontend`
+
+2. **Vite not watching**:
+   - Check logs for "file watcher" errors
+   - Restart container
+
+3. **Browser cache**:
+   - Hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)
+
+---
+
+## Data Issues
+
+### Data lost after restart
+
+**Symptoms**: Database empty after stopping/starting backend
+
+**Diagnose**:
 ```bash
-# Check mounts are active
-docker inspect capo-frontend-1 | grep -A 20 Mounts
-docker inspect capo-backend-1 | grep -A 20 Mounts
+# Check if data directory exists
+ls -la ~/.convex/anonymous-convex-backend-state/
 
-# Verify source paths exist on host
-ls -la ./convex
-ls -la ~/.convex
+# Check database file
+ls -lh ~/.convex/anonymous-convex-backend-state/anonymous-nutopia/convex_local_backend.sqlite3
 ```
 
-## Convex CLI Errors
+**Solutions**:
 
+1. **Data directory deleted**:
+   - Restore from backup if available
+   - See [data-management.md](/memory-bank/data-management.md)
+
+2. **Wrong deployment**:
+   - Check `~/.convex/local.json`
+   - Verify deployment name matches
+
+**Expected behavior**: Data persists across backend restarts.
+
+---
+
+### Database corrupted
+
+**Symptoms**: Backend crashes with SQLite errors
+
+**Solutions**:
+
+1. **Backup and reset**:
+   ```bash
+   # Backup current state
+   cp -r ~/.convex ~/.convex.backup.$(date +%Y%m%d)
+
+   # Remove deployment
+   rm -rf ~/.convex/anonymous-convex-backend-state
+
+   # Restart (will create fresh database)
+   npm run dev:backend &
+   ```
+
+2. **SQLite check** (advanced):
+   ```bash
+   sqlite3 ~/.convex/anonymous-convex-backend-state/anonymous-nutopia/convex_local_backend.sqlite3 "PRAGMA integrity_check;"
+   ```
+
+---
+
+## Agent-Specific Issues
+
+### Agent forgot to kill backend
+
+**Symptoms**: Backend process still running after agent task completed
+
+**Diagnose**:
 ```bash
-# Verify Convex CLI is installed in container
-docker exec capo-backend-1 npx convex --version
-
-# Reinstall if needed
-docker compose up --build -d backend
+# Check for Convex processes
+ps aux | grep "convex dev"
 ```
+
+**Solution**:
+```bash
+# Kill all Convex dev processes
+pkill -f "convex dev"
+# Verify
+lsof -i :3210  # Should return nothing
+```
+
+**Prevention**: Agents should ALWAYS run `pkill -f "convex dev"` when task completes.
+
+---
+
+### Agent started backend without asking
+
+**Violation of process ownership rules**.
+
+**Solution**:
+1. Kill the backend: `pkill -f "convex dev"`
+2. Remind agent of rules in SERVICES.md
+3. Report to user if agent violates protocol
+
+---
+
+## Performance Issues
+
+### Frontend slow
+
+**Diagnose**:
+```bash
+# Check container resource usage
+docker stats capo-frontend
+
+# Check system resources
+free -h
+top
+```
+
+**Solutions**:
+
+1. **Low memory**:
+   - Close other containers
+   - Increase system RAM if possible
+
+2. **High CPU during hot-reload**:
+   - Normal behavior during file changes
+   - Should settle within a few seconds
+
+3. **Large node_modules**:
+   - Already handled by not mounting node_modules
+   - First build will be slow, subsequent builds fast
+
+---
+
+### Backend slow
+
+**Diagnose**:
+```bash
+# Check process resource usage
+ps aux | grep "convex dev"
+
+# Check database size
+ls -lh ~/.convex/anonymous-convex-backend-state/anonymous-nutopia/convex_local_backend.sqlite3
+```
+
+**Solutions**:
+
+1. **Large database**:
+   - Normal for production data
+   - Consider archiving old data
+
+2. **Slow queries**:
+   - Check Convex dashboard for slow operations
+   - Add indexes if needed
+
+3. **High memory**:
+   - Normal for Convex (~100-200MB)
+   - Restart if leaking (rare)
+
+---
+
+## Network Issues
+
+### host.docker.internal not working
+
+**Symptoms**: Frontend can't reach backend, DNS resolution fails
+
+**Diagnose**:
+```bash
+# Test from inside container
+docker compose exec frontend nslookup host.docker.internal
+docker compose exec frontend ping host.docker.internal
+```
+
+**Solutions**:
+
+1. **Not on Docker Desktop**:
+   - `host.docker.internal` only works on Docker Desktop
+   - Linux: Use `172.17.0.1` (default Docker bridge gateway)
+   - Update `VITE_CONVEX_URL` in docker-compose.yml
+
+2. **Firewall blocking**:
+   - Check firewall rules
+   - Allow Docker network access
+
+3. **Docker network issue**:
+   ```bash
+   # Recreate network
+   docker compose down
+   docker network prune
+   docker compose up -d frontend
+   ```
+
+---
+
+## Still Stuck?
+
+1. **Check logs first** - 90% of issues are visible in logs
+2. **Restart services** - Fixes 50% of remaining issues
+3. **Check status** - Verify both services are running
+4. **Read architecture docs** - [architecture.md](/memory-bank/architecture.md)
+
+**Full system restart**:
+```bash
+# Stop everything
+npm run docker:stop:frontend
+pkill -f "convex dev"
+
+# Start frontend
+npm run docker:start:frontend
+
+# Start backend (ASK PERMISSION FIRST)
+npm run dev:backend &
+```
+
+If still broken, the logs will tell you what's wrong. Read them carefully.
