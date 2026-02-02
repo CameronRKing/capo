@@ -13,16 +13,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 
 export const Route = createFileRoute("/admin/results")({
   component: AdminResultsPage,
 });
 
 function AdminResultsPage() {
-  const currentUser = useQuery(api.users.getCurrent);
-  const games = useQuery(api.accessRequests.listGames);
+  const currentUser = useQuery(api.myFunctions.domain.users.getCurrent);
+  const games = useQuery(api.myFunctions.admin.accessRequests.listGames);
 
   // Filters
   const [selectedGameId, setSelectedGameId] = useState<Id<"games"> | "">("");
@@ -30,7 +30,7 @@ function AdminResultsPage() {
 
   // Get compilation history
   const compilationHistory = useQuery(
-    api.admin.compilation.getCompilationHistory,
+    api.myFunctions.admin.compilation.getCompilationHistory,
     selectedGameId ? { gameId: selectedGameId as Id<"games"> } : "skip"
   );
 

@@ -17,12 +17,12 @@
  */
 
 import { useState } from "react";
-import { FacePile } from "../../components/collaboration/FacePile";
-import { FocusIndicator } from "../../components/collaboration/FocusIndicator";
-import { HoverTooltip, QuickOfflineBadge } from "../../components/collaboration/HoverTooltip";
-import { LastEdited, LastEditedCompact } from "../../components/collaboration/LastEdited";
-import { UserCursors } from "../../components/collaboration/UserCursors";
-import { Id } from "../../convex/_generated/dataModel";
+import { FacePile } from "@/components/collaboration/FacePile";
+import { FocusIndicator } from "@/components/collaboration/FocusIndicator";
+import { HoverTooltip, QuickOfflineBadge } from "@/components/collaboration/HoverTooltip";
+import { LastEdited, LastEditedCompact } from "@/components/collaboration/LastEdited";
+import { UserCursors } from "@/components/collaboration/UserCursors";
+import { Id } from "@convex/_generated/dataModel";
 
 /**
  * Mock online users for testing (without auth)

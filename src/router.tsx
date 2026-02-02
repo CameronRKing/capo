@@ -10,14 +10,9 @@
 // Root route: /src/routes/__root.tsx
 // Other routes: /src/routes/**/*.tsx
 
-import { createRouter, createRouteContext } from '@tanstack/react-router';
+import { createRouter } from '@tanstack/react-router';
 import { ConvexReactClient } from 'convex/react';
 import { routeTree } from './routeTree.gen';
-
-// Create route context to pass Convex client to all routes
-export const RouteContext = createRouteContext({
-  convex: undefined as unknown as ConvexReactClient,
-});
 
 // Create the router instance using the generated route tree
 export const router = createRouter({

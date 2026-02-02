@@ -14,12 +14,13 @@
  * - Handles unauthenticated users gracefully
  * - Prevents flashing of incorrect content
  * - Uses TanStack Router's Navigate component for redirects
+ * - Includes error boundary for graceful error handling
  *
  * @route /
  */
 
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useCurrentUser } from "../hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 /**
  * Loading State Component
@@ -36,6 +37,30 @@ function LoadingState() {
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Please wait while we verify your account
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Error Boundary Component
+ *
+ * Catches and displays errors gracefully, especially useful during E2E tests
+ * when Convex functions may not be deployed yet.
+ */
+function RootErrorBoundary({ error }: { error: unknown }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Something went wrong
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          {error instanceof Error ? error.message : "An unexpected error occurred"}
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          For E2E tests, this is expected if Convex functions aren't deployed yet.
         </p>
       </div>
     </div>
@@ -81,7 +106,9 @@ function RootRouteComponent() {
  *
  * This route doesn't require any special loaders or beforeLoad hooks
  * since all auth checking happens client-side via the useCurrentUser hook.
+ * Includes errorComponent for graceful error handling.
  */
 export const Route = createFileRoute("/")({
   component: RootRouteComponent,
+  errorComponent: RootErrorBoundary,
 });

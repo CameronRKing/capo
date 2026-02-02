@@ -11,7 +11,7 @@
  * 3. Submission completion (optional, via proceedWithDefaults)
  */
 
-import { action, query, mutation } from "../_generated/server";
+import { action, query, mutation, internalQuery, internalMutation } from "../_generated/server";
 import { v } from "convex/values";
 import { api } from "../_generated/api";
 import { getCurrentUser, hasRole, canAccessGame } from "../services/permissions";
@@ -39,7 +39,7 @@ export const compileHiringDecisions = action({
 
     // Check submission status (warn if incomplete)
     if (!proceedWithDefaults) {
-      const status = await ctx.runQuery(api.admin.compilation.checkSubmissionStatus, {
+      const status = await ctx.runQuery(api.internal.admin.compilation.checkSubmissionStatus, {
         gameId,
         quarter,
         phase: "hiring",
@@ -55,7 +55,7 @@ export const compileHiringDecisions = action({
     }
 
     // Create compilation record
-    const compilationId = await ctx.runMutation(api.admin.compilation.createCompilationRecord, {
+    const compilationId = await ctx.runMutation(api.internal.admin.compilation.createCompilationRecord, {
       gameId,
       quarter,
       phase: "hiring",
@@ -70,7 +70,7 @@ export const compileHiringDecisions = action({
       });
 
       // Update compilation record with success
-      await ctx.runMutation(api.admin.compilation.updateCompilationRecord, {
+      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
         compilationId,
         status: "success",
         companiesProcessed: result.companiesProcessed || 0,
@@ -79,7 +79,7 @@ export const compileHiringDecisions = action({
       return result;
     } catch (error: any) {
       // Update compilation record with failure
-      await ctx.runMutation(api.admin.compilation.updateCompilationRecord, {
+      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
         compilationId,
         status: "failed",
         companiesProcessed: 0,
@@ -114,7 +114,7 @@ export const compileLeadershipDecisions = action({
 
     // Check submission status
     if (!proceedWithDefaults) {
-      const status = await ctx.runQuery(api.admin.compilation.checkSubmissionStatus, {
+      const status = await ctx.runQuery(api.internal.admin.compilation.checkSubmissionStatus, {
         gameId,
         quarter,
         phase: "leadership",
@@ -130,7 +130,7 @@ export const compileLeadershipDecisions = action({
     }
 
     // Create compilation record
-    const compilationId = await ctx.runMutation(api.admin.compilation.createCompilationRecord, {
+    const compilationId = await ctx.runMutation(api.internal.admin.compilation.createCompilationRecord, {
       gameId,
       quarter,
       phase: "leadership",
@@ -145,7 +145,7 @@ export const compileLeadershipDecisions = action({
       });
 
       // Update compilation record with success
-      await ctx.runMutation(api.admin.compilation.updateCompilationRecord, {
+      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
         compilationId,
         status: "success",
         companiesProcessed: result.companiesProcessed || 0,
@@ -154,7 +154,7 @@ export const compileLeadershipDecisions = action({
       return result;
     } catch (error: any) {
       // Update compilation record with failure
-      await ctx.runMutation(api.admin.compilation.updateCompilationRecord, {
+      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
         compilationId,
         status: "failed",
         companiesProcessed: 0,
@@ -176,7 +176,7 @@ export const compileLeadershipDecisions = action({
  *
  * Access: Admins (any game), Teachers (assigned game only)
  */
-export const checkSubmissionStatus = query({
+export const checkSubmissionStatus = internalQuery({
   args: {
     gameId: v.id("games"),
     quarter: v.number(),
@@ -368,7 +368,7 @@ async function requireGameAccess(ctx: any, user: any, gameId: string) {
  *
  * Access: Internal use only by compilation actions
  */
-export const createCompilationRecord = mutation({
+export const createCompilationRecord = internalMutation({
   args: {
     gameId: v.id("games"),
     quarter: v.number(),
@@ -400,7 +400,7 @@ export const createCompilationRecord = mutation({
  *
  * Access: Internal use only by compilation actions
  */
-export const updateCompilationRecord = mutation({
+export const updateCompilationRecord = internalMutation({
   args: {
     compilationId: v.id("compilations"),
     status: v.union(v.literal("success"), v.literal("failed")),

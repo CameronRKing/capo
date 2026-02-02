@@ -18,9 +18,26 @@
 
 import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
+import path from "path";
+import dotenv from "dotenv";
+
+// Load environment variables from .env.local
+dotenv.config({ path: ".env.local" });
 
 export default defineConfig({
+  // Set root to project root for correct path resolution
+  root: path.resolve(__dirname),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      "@convex": path.resolve(__dirname, "./convex"),
+    },
+  },
   test: {
+    // Environment variables for tests
+    env: {
+      VITE_CONVEX_URL: process.env.VITE_CONVEX_URL || "http://127.0.0.1:3210",
+    },
     // Browser mode configuration
     browser: {
       enabled: true,
@@ -48,9 +65,23 @@ export default defineConfig({
     hookTimeout: 30000,
     // Server configuration for testing the actual app
     server: {
+      // Allow file system access to project directories
+      fs: {
+        allow: [
+          // Allow access to project root
+          path.resolve(__dirname),
+          // Allow access to node_modules
+          path.resolve(__dirname, "node_modules"),
+        ],
+      },
       // Deps that need to be inlined in browser mode
       deps: {
-        inline: [],
+        inline: [
+          // Inline convex for browser mode
+          "convex",
+          "convex/react",
+          "@convex-dev/*",
+        ],
       },
     },
     // Coverage (optional, can be enabled separately)

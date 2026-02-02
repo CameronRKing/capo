@@ -29,8 +29,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 
 // Color palette for user cursors and avatars
 // Distinct colors accessible for color-blind users

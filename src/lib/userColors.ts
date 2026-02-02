@@ -12,10 +12,11 @@
  * ```
  */
 
+// Re-export user color utilities from the utils directory
+// This file provides a convenient import path for user color functions
 export {
   getUserColor,
-  getUserColorLight,
-  getAllUserColors,
-  getMultiUserFocusColor,
-  MULTI_USER_FOCUS_COLOR,
-} from "./userColors";
+  getDistinctColors,
+  getRandomColor,
+  COLOR_PALETTE,
+} from "./utils/userColors";

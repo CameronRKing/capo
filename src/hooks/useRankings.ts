@@ -38,8 +38,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 
 /**
  * Progress tracking data
@@ -100,14 +100,14 @@ export function useRankings(
 ): UseRankingsReturn {
   // Queries
   const myRankings = useQuery(
-    api.domain.rankings.getMyRankings,
+    api.myFunctions.domain.rankings.getMyRankings,
     companyId ? { companyId: companyId as Id<"companies"> } : "skip"
   );
-  const allResumes = useQuery(api.domain.resumes.getAll);
+  const allResumes = useQuery(api.myFunctions.domain.resumes.getAll);
 
   // Mutations
-  const saveRanking = useMutation(api.domain.rankings.saveRanking);
-  const deleteRanking = useMutation(api.domain.rankings.deleteRanking);
+  const saveRanking = useMutation(api.myFunctions.domain.rankings.saveRanking);
+  const deleteRanking = useMutation(api.myFunctions.domain.rankings.deleteRanking);
 
   // Local state for navigation
   const [currentIndex, setCurrentIndex] = useState(0);

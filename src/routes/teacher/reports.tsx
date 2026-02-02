@@ -24,14 +24,14 @@
 import React, { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { ReportNavigation, ReportType } from "../../../components/reports/ReportNavigation";
-import { ReportCard } from "../../../components/reports/ReportCard";
-import { FinancialReport } from "../../../components/reports/FinancialReport";
-import { HiringOutcomeReport } from "../../../components/reports/HiringOutcomeReport";
-import { RepPerformanceReport } from "../../../components/reports/RepPerformanceReport";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { ReportNavigation, ReportType } from "@/components/reports/ReportNavigation";
+import { ReportCard } from "@/components/reports/ReportCard";
+import { FinancialReport } from "@/components/reports/FinancialReport";
+import { HiringOutcomeReport } from "@/components/reports/HiringOutcomeReport";
+import { RepPerformanceReport } from "@/components/reports/RepPerformanceReport";
 
 /**
  * Loading State Component

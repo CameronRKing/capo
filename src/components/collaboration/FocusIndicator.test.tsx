@@ -9,8 +9,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { convexTest } from "convex-test";
 import { FocusIndicator } from "./FocusIndicator";
-import { api } from "../../convex/_generated/api";
-import schema from "../../convex/schema";
+import { api } from "@convex/_generated/api";
+import schema from "@convex/schema";
 
 // Mock the useFocus hook
 vi.mock("../../hooks/useFocus", () => ({

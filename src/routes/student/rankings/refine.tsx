@@ -26,11 +26,11 @@
 
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { RefinementBoard, RankingItem } from "../../../components/domain/rankings";
-import { CompanyPresenceHeader } from "../../../components/collaboration/CompanyPresenceHeader";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
+import { RefinementBoard, RankingItem } from "@/components/domain/rankings";
+import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 /**
  * Loader - Auth check and data preloading

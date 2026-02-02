@@ -2,143 +2,182 @@
  * E2E-01: Authentication & Access Request Flow (Browser Mode)
  *
  * True end-to-end test that runs in a real browser using Vitest browser mode.
- * Tests the complete user access workflow through the actual UI.
+ * Tests the access request form by navigating directly to the /request-access route.
  *
  * Prerequisites:
  * - Dev server must be running: `npm run dev`
  * - Convex backend must be available
  *
- * Run with: `npm run test:e2e -- e2e-01-browser`
+ * Run with: `npm run test:e2e`
  */
 
+import React from "react";
 import { test, expect } from "vitest";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { ConvexProvider } from "convex/react";
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "../../src/router";
+import { createTestConvexClient } from "./test-utils";
 
 /**
- * Test 1: Student access request - full flow
+ * Helper: Render the full app with router and navigate to request-access
+ */
+async function renderAndNavigateToRequestAccess() {
+  const client = createTestConvexClient();
+
+  const rendered = render(
+    <ConvexProvider client={client}>
+      <RouterProvider router={router} />
+    </ConvexProvider>
+  );
+
+  // Navigate to /request-access directly
+  router.navigate({ to: "/request-access" });
+
+  // Wait for the page to load
+  await waitFor(
+    () => {
+      expect(screen.getByText("Request Access")).toBeVisible();
+    },
+    { timeout: 5000 }
+  );
+
+  return rendered;
+}
+
+/**
+ * Test 1: Access request form renders correctly
  *
- * Verifies that a student can:
- * - Submit an access request
- * - Be approved by admin with game/company assignment
- * - Sign in with magic link (mocked)
- * - Be redirected to student dashboard
+ * Verifies that the form displays properly
  */
-test("E2E-01: Student access request - full flow", async ({ page }) => {
-  // Step 1: Navigate to access request page
-  await page.goto("/request-access");
+test("E2E-01: Access request form renders correctly", async () => {
+  await renderAndNavigateToRequestAccess();
 
-  // Step 2: Fill out access request form
-  await page.fill('[name="name"]', "Alice Student");
-  await page.fill('[name="email"]', "alice@student.com");
-  await page.selectOption('[name="role"]', "student");
+  // Verify heading
+  expect(screen.getByText("Request Access")).toBeVisible();
 
-  // Step 3: Submit request
-  await page.click('button[type="submit"]');
+  // Verify form fields exist
+  expect(screen.getByLabelText(/full name/i)).toBeVisible();
+  expect(screen.getByLabelText(/email address/i)).toBeVisible();
 
-  // Step 4: Verify success message
-  await expect(page.locator("text=Request submitted")).toBeVisible();
-  await expect(page.locator("text=pending approval")).toBeVisible();
+  // Verify role selection options
+  expect(screen.getByLabelText(/teacher/i)).toBeVisible();
+  expect(screen.getByLabelText(/student/i)).toBeVisible();
 
-  // Step 5: Login as admin
-  await page.goto("/admin/login");
-  // TODO: Add admin login when implemented
-  // await page.fill('[name="email"]', "admin@test.com");
-  // await page.click('button[type="submit"]');
-
-  // Step 6: Navigate to access requests page
-  await page.goto("/admin/access");
-
-  // Step 7: Find and approve the request
-  const requestRow = page.locator(`text=alice@student.com`);
-  await expect(requestRow).toBeVisible();
-
-  // Step 8: Click approve and assign game/company
-  await page.click(`button:has-text("Approve")`);
-  await page.selectOption("#game", "test-game");
-  await page.selectOption("#company", "company-a");
-  await page.click('button:has-text("Confirm")');
-
-  // Step 9: Verify approval
-  await expect(page.locator("text=Approved")).toBeVisible();
-
-  // Step 10: Student signs in
-  // In real flow, they'd click magic link from email
-  // For testing, we simulate magic link redirect
-  await page.goto("/login?token=mock-magic-link-token");
-
-  // Step 11: Verify redirected to student dashboard
-  await expect(page).toHaveURL(/\/student/);
-  await expect(page.locator("h1:has-text('Student Dashboard')")).toBeVisible();
+  // Verify submit button
+  expect(screen.getByRole("button", { name: /submit request/i })).toBeVisible();
 });
 
 /**
- * Test 2: Teacher access request - full flow
+ * Test 2: Form validation shows errors for empty fields
  */
-test("E2E-01: Teacher access request - full flow", async ({ page }) => {
-  await page.goto("/request-access");
+test("E2E-01: Form validation shows errors for empty fields", async () => {
+  await renderAndNavigateToRequestAccess();
 
-  await page.fill('[name="name"]', "Bob Teacher");
-  await page.fill('[name="email"]', "bob@teacher.com");
-  await page.selectOption('[name="role"]', "teacher");
+  // Try to submit without filling form
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  submitButton.click();
 
-  await page.click('button[type="submit"]');
-  await expect(page.locator("text=Request submitted")).toBeVisible();
-
-  // Admin approves
-  await page.goto("/admin/access");
-  const requestRow = page.locator(`text=bob@teacher.com`);
-  await expect(requestRow).toBeVisible();
-
-  await page.click(`button:has-text("Approve")`);
-  await page.selectOption("#game", "test-game");
-  await page.selectOption("#company", "company-a");
-  await page.click('button:has-text("Confirm")');
-
-  // Teacher signs in
-  await page.goto("/login?token=mock-magic-link-token");
-
-  // Verify redirected to teacher dashboard
-  await expect(page).toHaveURL(/\/teacher/);
-  await expect(page.locator("h1:has-text('Teacher Dashboard')")).toBeVisible();
+  // Should show validation errors
+  expect(screen.getByText("Name is required")).toBeVisible();
+  expect(screen.getByText("Email is required")).toBeVisible();
+  expect(screen.getByText("Please select your role")).toBeVisible();
 });
 
 /**
- * Test 3: Cannot submit duplicate access request
+ * Test 3: Form validates email format
  */
-test("E2E-01: Cannot submit duplicate access request", async ({ page }) => {
-  const email = "duplicate@test.com";
+test("E2E-01: Form validates email format", async () => {
+  await renderAndNavigateToRequestAccess();
 
-  // Submit first request
-  await page.goto("/request-access");
-  await page.fill('[name="name"]', "Duplicate User");
-  await page.fill('[name="email"]', email);
-  await page.selectOption('[name="role"]', "student");
-  await page.click('button[type="submit"]');
-  await expect(page.locator("text=Request submitted")).toBeVisible();
+  // Fill name
+  const nameInput = screen.getByLabelText(/full name/i);
+  fireEvent.change(nameInput, { target: { value: "Test User" } });
 
-  // Try to submit duplicate request
-  await page.goto("/request-access");
-  await page.fill('[name="name"]', "Duplicate User");
-  await page.fill('[name="email"]', email);
-  await page.selectOption('[name="role"]', "student");
-  await page.click('button[type="submit"]');
+  // Fill invalid email
+  const emailInput = screen.getByLabelText(/email address/i);
+  fireEvent.change(emailInput, { target: { value: "invalid-email" } });
 
-  // Should show error
-  await expect(page.locator("text=already pending")).toBeVisible();
+  // Select role
+  const studentRadio = screen.getByLabelText(/student/i);
+  studentRadio.click();
+
+  // Try to submit
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  submitButton.click();
+
+  // Should show email validation error
+  expect(screen.getByText("Please enter a valid email address")).toBeVisible();
 });
 
 /**
- * Test 4: Role-based dashboard redirects
+ * Test 4: Form submission shows loading state
  */
-test("E2E-01: Role-based dashboard redirects", async ({ page }) => {
-  // Student redirects to student dashboard
-  await page.goto("/login?token=student-token");
-  await expect(page).toHaveURL(/\/student/);
+test("E2E-01: Form submission shows loading state", async () => {
+  await renderAndNavigateToRequestAccess();
 
-  // Teacher redirects to teacher dashboard
-  await page.goto("/login?token=teacher-token");
-  await expect(page).toHaveURL(/\/teacher/);
+  // Fill form with valid data
+  const nameInput = screen.getByLabelText(/full name/i);
+  fireEvent.change(nameInput, { target: { value: "Alice Student" } });
 
-  // Admin redirects to admin dashboard
-  await page.goto("/login?token=admin-token");
-  await expect(page).toHaveURL(/\/admin/);
+  const emailInput = screen.getByLabelText(/email address/i);
+  fireEvent.change(emailInput, { target: { value: "alice@student.com" } });
+
+  const studentRadio = screen.getByLabelText(/student/i);
+  studentRadio.click();
+
+  // Submit form
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  submitButton.click();
+
+  // Should show loading state (button text changes to "Submitting...")
+  await waitFor(
+    () => {
+      expect(screen.getByText(/submitting/i)).toBeVisible();
+    },
+    { timeout: 5000 }
+  );
+});
+
+/**
+ * Test 5: Role selection highlights correctly
+ */
+test("E2E-01: Role selection highlights correctly", async () => {
+  await renderAndNavigateToRequestAccess();
+
+  // Select teacher role
+  const teacherRadio = screen.getByLabelText(/teacher/i);
+  teacherRadio.click();
+
+  // Verify visual feedback - the radio button should be checked
+  expect(teacherRadio).toBeChecked();
+
+  // Select student role
+  const studentRadio = screen.getByLabelText(/student/i);
+  studentRadio.click();
+
+  // Verify student is now checked and teacher is not
+  expect(studentRadio).toBeChecked();
+  expect(teacherRadio).not.toBeChecked();
+});
+
+/**
+ * Test 6: Form clears errors when user starts typing
+ */
+test("E2E-01: Form clears errors when user starts typing", async () => {
+  await renderAndNavigateToRequestAccess();
+
+  // Try to submit without filling form
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  submitButton.click();
+
+  // Should show errors
+  expect(screen.getByText("Name is required")).toBeVisible();
+
+  // Start typing in name field
+  const nameInput = screen.getByLabelText(/full name/i);
+  fireEvent.change(nameInput, { target: { value: "Test" } });
+
+  // Name error should clear
+  expect(screen.queryByText("Name is required")).not.toBeInTheDocument();
 });

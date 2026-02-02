@@ -28,11 +28,11 @@
 import React from "react";
 import { createFileRoute, redirect, Navigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { HiringDecisionForm } from "../../../components/decisions/HiringDecisionForm";
-import { LeadershipDecisionForm } from "../../../components/decisions/LeadershipDecisionForm";
-import { PhaseIndicator } from "../../../components/decisions/PhaseIndicator";
+import { api } from "@convex/_generated/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { HiringDecisionForm } from "@/components/decisions/HiringDecisionForm";
+import { LeadershipDecisionForm } from "@/components/decisions/LeadershipDecisionForm";
+import { PhaseIndicator } from "@/components/decisions/PhaseIndicator";
 
 /**
  * Loading State Component

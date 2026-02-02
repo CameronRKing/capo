@@ -18,10 +18,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { usePresence } from "../../hooks/usePresence";
-import { useFocus } from "../../hooks/useFocus";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
+import { usePresence } from "@/hooks/usePresence";
+import { useFocus } from "@/hooks/useFocus";
 import { CompanyPresenceHeader } from "../collaboration/CompanyPresenceHeader";
 import { TerritoryMap } from "./TerritoryMap";
 
@@ -74,7 +74,7 @@ export function LeadershipDecisionForm({
   user,
 }: LeadershipDecisionFormProps) {
   // Load working decision
-  const workingDecision = useQuery(api.domain.decisions.getLeadershipDecisionWorking, {
+  const workingDecision = useQuery(api.myFunctions.domain.decisions.getLeadershipDecisionWorking, {
     companyId,
     quarter,
   });
@@ -86,8 +86,8 @@ export function LeadershipDecisionForm({
   });
 
   // Mutations
-  const saveWorking = useMutation(api.domain.decisions.saveLeadershipDecisionWorking);
-  const submitDecision = useMutation(api.domain.decisions.submitLeadershipDecision);
+  const saveWorking = useMutation(api.myFunctions.domain.decisions.saveLeadershipDecisionWorking);
+  const submitDecision = useMutation(api.myFunctions.domain.decisions.submitLeadershipDecision);
 
   // Presence and focus
   const { onlineUsers, getUserColor } = usePresence(companyId);

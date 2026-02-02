@@ -35,7 +35,7 @@
  */
 
 import React, { useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { CompanyPresenceHeader } from "./CompanyPresenceHeader";
 import { FocusIndicator } from "./FocusIndicator";
 

@@ -35,8 +35,8 @@
  */
 
 import React, { ReactNode, useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
-import { useFocus } from "../../hooks/useFocus";
+import { Id } from "@convex/_generated/dataModel";
+import { useFocus } from "@/hooks/useFocus";
 import { FacePile, FacePileUser } from "./FacePile";
 import { getUserColor } from "../../lib/userColors";
 

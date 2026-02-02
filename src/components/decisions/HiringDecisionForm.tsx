@@ -33,12 +33,12 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { CompanyPresenceHeader } from "../collaboration/CompanyPresenceHeader";
 import { FocusIndicator } from "../collaboration/FocusIndicator";
-import { hiringDecisionSchema, type HiringDecision } from "../../convex/domain/decisions/validators";
+import { hiringDecisionSchema, type HiringDecision } from "@convex/domain/decisions/validators";
 
 // =====================================================
 // Types & Interfaces
@@ -232,7 +232,7 @@ export function HiringDecisionForm({ companyId, quarter }: HiringDecisionFormPro
   // ===================================================
 
   // Load working decision
-  const workingDecision = useQuery(api.domain.decisions.getHiringDecisionWorking, {
+  const workingDecision = useQuery(api.myFunctions.domain.decisions.getHiringDecisionWorking, {
     companyId,
     quarter,
   });
@@ -241,8 +241,8 @@ export function HiringDecisionForm({ companyId, quarter }: HiringDecisionFormPro
   const company = useQuery(api.companies.get, { id: companyId });
 
   // Mutations
-  const saveMutation = useMutation(api.domain.decisions.saveHiringDecisionWorking);
-  const submitMutation = useMutation(api.domain.decisions.submitHiringDecision);
+  const saveMutation = useMutation(api.myFunctions.domain.decisions.saveHiringDecisionWorking);
+  const submitMutation = useMutation(api.myFunctions.domain.decisions.submitHiringDecision);
 
   // ===================================================
   // Initialize Form from Working Decision

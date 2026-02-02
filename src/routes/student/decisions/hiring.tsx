@@ -21,10 +21,10 @@
 import React from "react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { HiringDecisionForm } from "../../../components/decisions/HiringDecisionForm";
-import { Id } from "../../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { HiringDecisionForm } from "@/components/decisions/HiringDecisionForm";
+import { Id } from "@convex/_generated/dataModel";
 
 /**
  * HiringDecisionPage Component

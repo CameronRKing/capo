@@ -5,6 +5,10 @@ import { api } from "./_generated/api";
 // Domain functions
 export * from "./domain/index";
 
+// Top-level modules
+export * from "./users";
+export * from "./accessRequests";
+
 // Compilation functions
 export * from "./compilation/index";
 

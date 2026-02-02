@@ -14,8 +14,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 
 export const Route = createFileRoute("/admin/compilation")({
   component: AdminCompilationPage,
@@ -24,8 +24,8 @@ export const Route = createFileRoute("/admin/compilation")({
 type Phase = "hiring" | "leadership";
 
 function AdminCompilationPage() {
-  const currentUser = useQuery(api.users.getCurrent);
-  const games = useQuery(api.accessRequests.listGames);
+  const currentUser = useQuery(api.myFunctions.domain.users.getCurrent);
+  const games = useQuery(api.myFunctions.admin.accessRequests.listGames);
 
   // Selected game/quarter/phase
   const [selectedGameId, setSelectedGameId] = useState<Id<"games"> | "">("");
@@ -39,13 +39,13 @@ function AdminCompilationPage() {
 
   // Get companies for selected game
   const companies = useQuery(
-    api.internal.listGameCompanies,
+    api.myFunctions.internal.listGameCompanies,
     selectedGameId ? { gameId: selectedGameId as Id<"games"> } : "skip"
   );
 
   // Check submission status
   const submissionStatus = useQuery(
-    api.admin.compilation.checkSubmissionStatus,
+    api.myFunctions.admin.compilation.checkSubmissionStatus,
     selectedGameId && selectedQuarter && selectedPhase
       ? {
           gameId: selectedGameId as Id<"games">,
@@ -57,7 +57,7 @@ function AdminCompilationPage() {
 
   // Get current compilation status
   const compilationStatus = useQuery(
-    api.admin.compilation.getCompilationStatus,
+    api.myFunctions.admin.compilation.getCompilationStatus,
     selectedGameId && selectedQuarter && selectedPhase
       ? {
           gameId: selectedGameId as Id<"games">,
@@ -68,9 +68,9 @@ function AdminCompilationPage() {
   );
 
   // Compile actions
-  const compileHiring = useAction(api.admin.compilation.compileHiringDecisions);
+  const compileHiring = useAction(api.myFunctions.admin.compilation.compileHiringDecisions);
   const compileLeadership = useAction(
-    api.admin.compilation.compileLeadershipDecisions
+    api.myFunctions.admin.compilation.compileLeadershipDecisions
   );
 
   // Redirect if not authenticated or not admin/teacher

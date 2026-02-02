@@ -9,9 +9,9 @@
 
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { LeadershipDecisionForm } from "../../../components/decisions/LeadershipDecisionForm";
+import { api } from "@convex/_generated/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { LeadershipDecisionForm } from "@/components/decisions/LeadershipDecisionForm";
 import { AlertCircle } from "lucide-react";
 
 /**

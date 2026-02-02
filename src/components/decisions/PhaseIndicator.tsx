@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Id } from "../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 // =====================================================
 // Types & Interfaces

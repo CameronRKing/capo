@@ -13,24 +13,31 @@
  *
  *   return <div>Welcome, {user.name}!</div>;
  * }
+ * }
  */
 
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Doc } from "../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Doc } from "@convex/_generated/dataModel";
 
 export type User = Doc<"users">;
 
 /**
  * Hook to get current authenticated user
  *
- * Returns undefined if user is not authenticated or is loading.
+ * Returns undefined if loading
+ * Returns null if not authenticated or on error
  * Returns user object if authenticated.
  *
- * @returns User object or undefined
+ * @returns User object, null, or undefined
  */
-export function useCurrentUser(): User | undefined {
-  const user = useQuery(api.users.getCurrent);
+export function useCurrentUser(): User | null | undefined {
+  const result = useQuery(api.users.getCurrent);
 
-  return user;
+  // Handle case where query returns undefined or has error
+  if (!result || result.error) {
+    return null;
+  }
+
+  return result;
 }

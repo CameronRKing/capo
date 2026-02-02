@@ -38,7 +38,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 /**
  * Last edited metadata

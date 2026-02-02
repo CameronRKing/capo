@@ -33,7 +33,7 @@
  */
 
 import React, { useState, useRef, useEffect } from "react";
-import { Id } from "../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 /**
  * User data for tooltip display

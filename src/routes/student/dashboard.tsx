@@ -24,10 +24,10 @@
 import React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { PhaseIndicator } from "../../../components/decisions/PhaseIndicator";
-import { CompanyPresenceHeader } from "../../../components/collaboration/CompanyPresenceHeader";
+import { api } from "@convex/_generated/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { PhaseIndicator } from "@/components/decisions/PhaseIndicator";
+import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
 
 /**
  * Loading State Component

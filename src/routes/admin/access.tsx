@@ -9,9 +9,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { ApprovalModal } from "../../components/ApprovalModal";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
+import { ApprovalModal } from "@/components/ApprovalModal";
 
 export const Route = createFileRoute("/admin/access")({
   component: AdminAccessPage,
@@ -26,10 +26,10 @@ function AdminAccessPage() {
   >(null);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
 
-  const pendingRequests = useQuery(api.accessRequests.listPending);
-  const games = useQuery(api.accessRequests.listGames);
-  const approveRequest = useMutation(api.accessRequests.approve);
-  const denyRequest = useMutation(api.accessRequests.deny);
+  const pendingRequests = useQuery(api.myFunctions.admin.accessRequests.listPending);
+  const games = useQuery(api.myFunctions.admin.accessRequests.listGames);
+  const approveRequest = useMutation(api.myFunctions.admin.accessRequests.approve);
+  const denyRequest = useMutation(api.myFunctions.admin.accessRequests.deny);
 
   // Direct grant form state
   const [directGrantForm, setDirectGrantForm] = useState({
@@ -298,7 +298,7 @@ function DirectGrantTab({
   games: any[] | undefined;
 }) {
   const companies = useQuery(
-    api.accessRequests.listCompanies,
+    api.myFunctions.admin.accessRequests.listCompanies,
     form.gameId ? { gameId: form.gameId as any } : "skip"
   );
 

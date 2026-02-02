@@ -78,7 +78,7 @@ export function protectedRoute(
 
       // Query the current user from Convex
       const user: AuthUser | null = await convex.query(
-        api.users.getCurrent
+        api.myFunctions.domain.users.getCurrent
       );
 
       if (!user) {
@@ -181,7 +181,7 @@ export async function getCurrentUserForRoute(
 ): Promise<AuthUser | null> {
   try {
     const { api } = await import("../../convex/_generated/api");
-    return await convex.query(api.users.getCurrent);
+    return await convex.query(api.myFunctions.domain.users.getCurrent);
   } catch {
     return null;
   }

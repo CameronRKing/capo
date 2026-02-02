@@ -18,11 +18,11 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { useRankings } from "../../../hooks/useRankings";
-import { ResumeCard } from "../../../components/rankings/ResumeCard";
-import { CompanyPresenceHeader } from "../../../components/collaboration/CompanyPresenceHeader";
+import { api } from "@convex/_generated/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useRankings } from "@/hooks/useRankings";
+import { ResumeCard } from "@/components/rankings/ResumeCard";
+import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
 
 /**
  * Progress Bar Component
@@ -343,7 +343,7 @@ export function RoughSortingPage() {
 
   // Get teammate rankings for collaboration
   const teammateRankings = useQuery(
-    api.domain.rankings.getTeammateRankings,
+    api.myFunctions.domain.rankings.getTeammateRankings,
     user?.companyId ? { companyId: user.companyId } : "skip"
   );
 

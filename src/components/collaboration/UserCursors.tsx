@@ -39,7 +39,7 @@
  */
 
 import React from "react";
-import { Id } from "../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { getUserColor } from "../../lib/userColors";
 
 /**

@@ -5,16 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
-    "dev:frontend": "vite --open",
-    "dev:backend": "convex dev --typecheck=disable --local",
+    "dev:frontend": "npm rebuild esbuild && vite --open",
+    "dev:backend": "convex dev --local",
     "build": "tsc -b && vite build",
     "lint": "tsc && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:once": "vitest run",
+    "test": "npm rebuild esbuild && vitest",
+    "test:once": "npm rebuild esbuild && vitest run",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:coverage": "vitest run --coverage --coverage.reporter=text",
-    "test:e2e": "vitest --config=vitest.config.e2e.mts"
+    "test:e2e": "npm rebuild esbuild && vitest run --config=vitest.config.e2e.mts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.7",
@@ -32,8 +32,10 @@
     "@tanstack/router-plugin": "^1.157.18",
     "ai": "^6.0.27",
     "ai-sdk-provider-claude-code": "^3.1.0",
-    "convex": "^1.31.0",
+    "convex": "1.31.7",
     "convex-helpers": "^0.1.109",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.563.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "resend": "^6.9.1"
@@ -45,6 +47,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
