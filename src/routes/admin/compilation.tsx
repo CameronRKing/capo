@@ -11,7 +11,7 @@
  * - Real-time progress/error display
  */
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -46,6 +46,18 @@ function AdminCompilationPage() {
   // Check submission status
   const submissionStatus = useQuery(
     api.admin.compilation.checkSubmissionStatus,
+    selectedGameId && selectedQuarter && selectedPhase
+      ? {
+          gameId: selectedGameId as Id<"games">,
+          quarter: selectedQuarter,
+          phase: selectedPhase,
+        }
+      : "skip"
+  );
+
+  // Get current compilation status
+  const compilationStatus = useQuery(
+    api.admin.compilation.getCompilationStatus,
     selectedGameId && selectedQuarter && selectedPhase
       ? {
           gameId: selectedGameId as Id<"games">,
@@ -129,13 +141,34 @@ function AdminCompilationPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Compilation Control
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Trigger compilation processes and review submission status
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Compilation Control
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Trigger compilation processes and review submission status
+            </p>
+          </div>
+          <Link
+            to="/admin/results"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            View History
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -240,6 +273,38 @@ function AdminCompilationPage() {
                   Compile {selectedPhase === "hiring" ? "Hiring" : "Leadership"}{" "}
                   Decisions
                 </h2>
+
+                {/* Current Compilation Status */}
+                {compilationStatus && (
+                  <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                        Last Compilation
+                      </span>
+                      <span className="text-xs text-blue-600 dark:text-blue-400 capitalize">
+                        {compilationStatus.status}
+                      </span>
+                    </div>
+                    <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                      <p>
+                        Status:{" "}
+                        {compilationStatus.status === "success"
+                          ? "Completed"
+                          : compilationStatus.status === "failed"
+                          ? "Failed"
+                          : "In Progress"}
+                      </p>
+                      <p>
+                        Companies: {compilationStatus.companiesProcessed}
+                      </p>
+                      {compilationStatus.errorMessage && (
+                        <p className="text-red-600 dark:text-red-400">
+                          Error: {compilationStatus.errorMessage}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {submissionStatus && (
                   <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">

@@ -280,4 +280,20 @@ export default defineSchema({
   })
     .index("by_field", ["fieldId"])
     .index("by_user", ["userId"]),
+
+  // --------------------------------------------------
+  // Compilation Management
+  // --------------------------------------------------
+  compilations: defineTable({
+    gameId: v.id("games"),
+    quarter: v.number(),
+    phase: v.union(v.literal("hiring"), v.literal("leadership")),
+    status: v.union(v.literal("pending"), v.literal("success"), v.literal("failed")),
+    startedAt: v.number(),
+    completedAt: v.optional(v.number()),
+    compiledBy: v.id("users"),
+    companiesProcessed: v.number(),
+    errorMessage: v.optional(v.string()),
+  })
+    .index("by_game_quarter_phase", ["gameId", "quarter", "phase"]),
 });
