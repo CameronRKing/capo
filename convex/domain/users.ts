@@ -4,7 +4,7 @@
  * User profile and authentication queries.
  */
 
-import { query } from "../_generated/server";
+import { query, queryWithRLS } from "../_generated/server";
 import { v } from "convex/values";
 
 /**
@@ -29,5 +29,33 @@ export const getCurrent = query({
       .first();
 
     return user;
+  },
+});
+
+/**
+ * Query: List users by company
+ *
+ * Returns all users assigned to a specific company.
+ * Used for displaying team members and presence.
+ *
+ * Access Control (via RLS):
+ * - Students: Can read their own company's users
+ * - Teachers: Can read users in companies in their game
+ * - Admins: Can read any company's users
+ *
+ * @param companyId - The ID of the company to list users for
+ * @returns Array of users in the company
+ */
+export const listByCompany = queryWithRLS({
+  args: {
+    companyId: v.id("companies"),
+  },
+  handler: async (ctx, { companyId }) => {
+    const users = await ctx.db
+      .query("users")
+      .withIndex("by_company", (q) => q.eq("companyId", companyId))
+      .collect();
+
+    return users;
   },
 });
