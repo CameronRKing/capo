@@ -34,4 +34,4 @@ test("example", async () => {
 
 To run E2E tests, use `npm run test:e2e`. NEVER EVER EVER try to start a vitest service directly by yourself; **ALWAYS** use `npm run test:e2e` for running E2E tests. Always rely on `vq` for unit && integration tests.
 
-To run a Vite server, **ALWAYS** use `npm run dev`. NEVER EVER EVER use `npx vite` or `npx vitest`, as they WILL BREAK SOONER OR LATER due to an undiagnosed device issue with binaries. If you're getting an issue with esbuild, the fix is ALWAYS to prepend your command with `npm rebuild esbuild && `.
+@SERVICES.md
