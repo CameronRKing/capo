@@ -253,4 +253,15 @@ export default defineSchema({
     path: v.string(), // SVG path string
   })
     .index("by_id", ["id"]),
+
+  // --------------------------------------------------
+  // Real-Time Collaboration
+  // --------------------------------------------------
+  presenceFocus: defineTable({
+    fieldId: v.string(), // Format: "companyId:entity:fieldPath" e.g., "company123:hiring:salary"
+    userId: v.id("users"),
+    timestamp: v.number(), // UTC epoch milliseconds
+  })
+    .index("by_field", ["fieldId"])
+    .index("by_user", ["userId"]),
 });
