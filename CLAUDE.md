@@ -32,4 +32,4 @@ test("example", async () => {
 
 @memory-bank/vq-rules.md
 
-To run E2E tests, use `npm run test:e2e`.
+To run E2E tests, use `npm run test:e2e`. NEVER EVER EVER try to start a vitest service directly by yourself; **ALWAYS** use `npm run test:e2e` for running E2E tests. Always rely on `vq` for unit && integration tests.

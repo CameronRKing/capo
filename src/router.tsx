@@ -1,20 +1,27 @@
-import { createRouter, createRootRoute, createRouteContext } from '@tanstack/react-router';
+// Router Configuration
+//
+// This file configures TanStack Router with file-based routing.
+//
+// The TanStack Router Vite plugin automatically generates the route tree
+// from the files in /src/routes/ directory during development and build time.
+//
+// Generated route tree: /src/routeTree.gen.ts
+//
+// Root route: /src/routes/__root.tsx
+// Other routes: /src/routes/**/*.tsx
+
+import { createRouter, createRouteContext } from '@tanstack/react-router';
 import { ConvexReactClient } from 'convex/react';
-import { App } from './App';
+import { routeTree } from './routeTree.gen';
 
 // Create route context to pass Convex client to all routes
 export const RouteContext = createRouteContext({
   convex: undefined as unknown as ConvexReactClient,
 });
 
-// Create the root route with the App component
-const rootRoute = createRootRoute({
-  component: App,
-}).createChildRoute(RouteContext.Provider);
-
-// Create the router instance in code-routing mode
+// Create the router instance using the generated route tree
 export const router = createRouter({
-  routeTree: rootRoute,
+  routeTree,
   defaultPreload: 'intent',
   context: {
     // This will be set by the RouterProvider wrapper

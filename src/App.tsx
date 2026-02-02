@@ -1,3 +1,19 @@
+/**
+ * DEPRECATED: App.tsx
+ *
+ * This file is no longer used. The application now uses TanStack Router
+ * for routing, which is configured in /data/projects/capo/src/router.tsx
+ * and initialized in /data/projects/capo/src/main.tsx.
+ *
+ * All routes are now defined in /data/projects/capo/src/routes/
+ * using file-based routing with @tanstack/react-router.
+ *
+ * The root route (/) is now at:
+ *   /data/projects/capo/src/routes/__root.tsx
+ *
+ * This file is kept for reference only and can be deleted.
+ */
+
 "use client";
 
 import { useState } from "react";
