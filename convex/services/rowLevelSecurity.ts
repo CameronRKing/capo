@@ -87,8 +87,10 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
         return user.role === "admin" || user.role === "teacher";
       },
       modify: async (ctx, decision) => {
-        // Students can modify their company's decisions
-        if (user.role === "student" && decision.companyId === user.companyId) return true;
+        // Students can only modify their company's non-submitted decisions
+        if (user.role === "student" && decision.companyId === user.companyId) {
+          return !decision.isSubmitted;
+        }
         // Teachers can read but not modify student decisions
         if (user.role === "teacher") return false;
         // Admins can modify all decisions
@@ -111,8 +113,13 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
         return user.role === "admin" || user.role === "teacher";
       },
       modify: async (ctx, decision) => {
-        if (user.role === "student" && decision.companyId === user.companyId) return true;
+        // Students can only modify their company's non-submitted decisions
+        if (user.role === "student" && decision.companyId === user.companyId) {
+          return !decision.isSubmitted;
+        }
+        // Teachers can never modify student decisions
         if (user.role === "teacher") return false;
+        // Admins can modify everything
         return user.role === "admin";
       },
     },
