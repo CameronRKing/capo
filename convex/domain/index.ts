@@ -32,5 +32,8 @@ export * from "./territories";
 // Users
 export * from "./users";
 
+// Teacher Dashboard
+export * from "../teacher/dashboard";
+
 // Internal
 export * from "./internal";
