@@ -19,6 +19,8 @@
     "@convex-dev/prosemirror-sync": "^0.2.0",
     "@convex-dev/stripe": "^0.1.1",
     "@convex-dev/workflow": "^0.3.3",
+    "@tanstack/react-router": "^1.157.18",
+    "@tanstack/router-plugin": "^1.157.18",
     "ai": "^6.0.27",
     "ai-sdk-provider-claude-code": "^3.1.0",
     "convex": "^1.31.0",

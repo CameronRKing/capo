@@ -15,7 +15,7 @@ After the initial setup (<2 minutes) you'll have a working full-stack app using:
 If you just cloned this codebase and didn't use `npm create convex`, run:
 
 ```
-npm install
+npm install --legacy-peer-deps
 npm run dev
 ```
 
