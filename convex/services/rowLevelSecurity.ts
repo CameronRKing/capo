@@ -181,6 +181,8 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
     },
 
     // Resume rankings (student-specific data)
+    // Students can READ their own rankings AND teammates' rankings (private but visible)
+    // Students can only MODIFY their own rankings
     resumeRankings: {
       read: async (ctx, ranking) => {
         if (user.role === "admin") return true;
@@ -188,8 +190,12 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
           const company = await ctx.db.get(ranking.companyId);
           return company?.gameId === user.gameId;
         }
-        // Students read their own rankings
-        return ranking.userId === user._id;
+        // Students read their own rankings AND teammates' rankings
+        // This enables real-time collaboration - students see but cannot edit teammates' work
+        if (user.role === "student") {
+          return ranking.userId === user._id || ranking.companyId === user.companyId;
+        }
+        return false;
       },
       insert: async (ctx, ranking) => {
         // Students create rankings for themselves
@@ -197,7 +203,8 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
         return user.role === "admin" || user.role === "teacher";
       },
       modify: async (ctx, ranking) => {
-        // Students modify their own rankings
+        // Students can only modify their OWN rankings (not teammates')
+        // This enforces private-but-visible: see others' work, can't change it
         if (user.role === "student" && ranking.userId === user._id) return true;
         if (user.role === "teacher") return false;
         return user.role === "admin";

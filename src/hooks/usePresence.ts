@@ -164,7 +164,7 @@ export function usePresence(
 
   // Check if user is online
   const isOnline = useCallback(
-    (userId: Id<"users>) => {
+    (userId: Id<"users">) => {
       return onlineUsers.some((u) => u.user._id === userId);
     },
     [onlineUsers]
@@ -172,7 +172,7 @@ export function usePresence(
 
   // Assign consistent color to user based on their ID
   const getUserColor = useCallback(
-    (userId: Id<"users>) => {
+    (userId: Id<"users">) => {
       // Hash the user ID to get a consistent index
       const hash = userId.split("").reduce((acc, char) => {
         return acc + char.charCodeAt(0);

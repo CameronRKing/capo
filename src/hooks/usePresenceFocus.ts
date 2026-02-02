@@ -35,13 +35,13 @@ export interface LastEditedInfo {
 
 export interface UsePresenceFocusOptions {
   /** The company ID for presence room */
-  companyId: Id<"companies>;
+  companyId: Id<"companies">;
   /** The entity type (e.g., "hiring", "leadership", "rankings") */
   entity: string;
   /** The field path (e.g., "salary", "timeRecruiting") */
   fieldPath: string;
   /** Current user ID (from auth) */
-  userId: Id<"users>;
+  userId: Id<"users">;
   /** Whether to enable focus tracking (default: true) */
   enabled?: boolean;
 }

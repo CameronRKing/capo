@@ -23,3 +23,33 @@ export const create = mutation({
     return await ctx.db.insert("games", args);
   },
 });
+
+/**
+ * Test helper: Create a company
+ */
+export const createCompany = mutation({
+  args: {
+    gameId: v.id("games"),
+    industry: v.string(),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("companies", args);
+  },
+});
+
+/**
+ * Test helper: Create a user
+ */
+export const createUser = mutation({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    role: v.union(v.literal("admin"), v.literal("teacher"), v.literal("student")),
+    gameId: v.optional(v.id("games")),
+    companyId: v.optional(v.id("companies")),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("users", args);
+  },
+});

@@ -7,7 +7,9 @@
  * ```tsx
  * import {
  *   usePresence,
- *   useFocus
+ *   useFocus,
+ *   useCurrentUser,
+ *   useRankings
  * } from "@/hooks";
  * ```
  */
@@ -19,3 +21,11 @@ export type { UserPresence, UsePresenceReturn } from "./usePresence";
 // Focus hooks
 export { useFocus, constructFieldId } from "./useFocus";
 export type { FocusedUser, UseFocusReturn } from "./useFocus";
+
+// User hooks
+export { useCurrentUser } from "./useCurrentUser";
+export type { User } from "./useCurrentUser";
+
+// Ranking hooks
+export { useRankings } from "./useRankings";
+export type { RankingProgress, UseRankingsReturn } from "./useRankings";
