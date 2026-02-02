@@ -1,7 +1,7 @@
 import { defineApp } from "convex/server";
-import agent from "@convex-dev/agent/convex.config.js";
+import presence from "@convex-dev/presence/convex.config.js";
 
 const app = defineApp();
-app.use(agent);
+app.use(presence);
 
 export default app;
