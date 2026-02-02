@@ -6,7 +6,7 @@
  */
 
 import { v } from "convex/values";
-import { queryWithRLS, mutationWithRLS } from "../../services/rowLevelSecurity";
+import { queryWithRLS, mutationWithRLS } from "../services/rowLevelSecurity";
 
 /**
  * List all active reps for a company in a specific quarter

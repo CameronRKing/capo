@@ -13,6 +13,9 @@ export * from "./activeReps";
 // Decisions
 export * from "./decisions/persistence";
 
+// Games
+export * from "./games";
+
 // Rankings
 export * from "./rankings";
 
