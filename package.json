@@ -13,7 +13,8 @@
     "test": "vitest",
     "test:once": "vitest run",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
-    "test:coverage": "vitest run --coverage --coverage.reporter=text"
+    "test:coverage": "vitest run --coverage --coverage.reporter=text",
+    "test:e2e": "vitest --config=vitest.config.e2e.mts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.7",

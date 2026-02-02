@@ -427,3 +427,40 @@ export const generateHiringList = mutationWithRLS({
     }
   },
 });
+
+// ============================================================
+// TEST-ONLY MUTATIONS (for RLS testing)
+// These are exported only for testing RLS enforcement
+// ============================================================
+
+/**
+ * Test-only mutation: Update a ranking by ID
+ * Used to test that RLS properly blocks unauthorized modifications
+ */
+export const testUpdateRankingById = mutationWithRLS({
+  args: {
+    rankingId: v.id("resumeRankings"),
+    group: v.union(v.literal("A"), v.literal("B"), v.literal("C")),
+    rank: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.rankingId, {
+      group: args.group,
+      rank: args.rank,
+    });
+  },
+});
+
+/**
+ * Test-only mutation: Delete a ranking by ID
+ * Used to test that RLS properly blocks unauthorized deletions
+ */
+export const testDeleteRankingById = mutationWithRLS({
+  args: {
+    rankingId: v.id("resumeRankings"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.rankingId);
+  },
+});
+

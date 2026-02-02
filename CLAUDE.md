@@ -29,3 +29,7 @@ test("example", async () => {
   expect(result).toMatchObject({ viewer: "Anonymous" });
 });
 ```
+
+@memory-bank/vq-rules.md
+
+To run E2E tests, use `npm run test:e2e`.

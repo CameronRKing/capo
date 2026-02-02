@@ -4,7 +4,8 @@
  * User profile and authentication queries.
  */
 
-import { query, queryWithRLS } from "../_generated/server";
+import { query } from "../_generated/server";
+import { queryWithRLS } from "../services/rowLevelSecurity";
 import { v } from "convex/values";
 
 /**
