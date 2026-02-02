@@ -1,2 +1,31 @@
 
 @convex_rules.mdc
+
+@.claude/docs/convex/components.md
+
+## Testing
+
+**Documentation**: `.claude/docs/testing/vitest-convex-test.md`
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run tests in watch mode |
+| `npm run test:once` | Run all tests once |
+| `npm run test:once convex/` | Run only Convex tests |
+| `npm run test:coverage` | Run with coverage report |
+| `npm run test:debug` | Debug with inspector |
+
+**Example**:
+```typescript
+import { convexTest } from "convex-test";
+import { expect, test } from "vitest";
+import { api } from "./_generated/api";
+import schema from "./schema";
+
+test("example", async () => {
+  const t = convexTest(schema);
+  await t.mutation(api.myFunctions.addNumber, { value: 42 });
+  const result = await t.query(api.myFunctions.listNumbers, { count: 10 });
+  expect(result).toMatchObject({ viewer: "Anonymous" });
+});
+```
