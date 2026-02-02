@@ -11,7 +11,7 @@ export default defineConfig({
     ],
     server: {
       deps: {
-        inline: ["convex-test"],
+        inline: ["convex-test", "zod"],
       },
     },
   },
