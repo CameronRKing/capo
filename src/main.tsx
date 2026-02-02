@@ -10,7 +10,12 @@ const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ConvexProvider client={convex}>
-      <RouterProvider router={router} />
+      <RouterProvider
+        router={router}
+        context={{
+          convex,
+        }}
+      />
     </ConvexProvider>
   </StrictMode>,
 );

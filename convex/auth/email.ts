@@ -16,6 +16,8 @@
  * Example: https://github.com/get-convex/convex-auth-example/blob/main/convex/otp/ResendOTP.ts
  */
 
+"use node";
+
 import Email from "@convex-dev/auth/providers/Email";
 import { Resend as ResendAPI } from "resend";
 

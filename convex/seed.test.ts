@@ -177,3 +177,92 @@ test("populateStaticData - data integrity check", async () => {
     expect(countyIds[i]).toBe(i + 1);
   }
 });
+
+test("createAdmin - creates admin user successfully", async () => {
+  const t = convexTest(schema);
+
+  const result = await t.mutation(api.seed.createAdmin, {
+    email: "admin@capo.dev",
+    name: "Capo Admin",
+  });
+
+  expect(result.success).toBe(true);
+  expect(result.message).toBe("Admin user created successfully");
+  expect(result.admin).toBeDefined();
+  expect(result.admin.email).toBe("admin@capo.dev");
+  expect(result.admin.name).toBe("Capo Admin");
+  expect(result.admin.role).toBe("admin");
+  expect(result.isNew).toBe(true);
+});
+
+test("createAdmin - prevents duplicate admin creation", async () => {
+  const t = convexTest(schema);
+
+  // Create first admin
+  const result1 = await t.mutation(api.seed.createAdmin, {
+    email: "admin@capo.dev",
+    name: "Capo Admin",
+  });
+
+  expect(result1.success).toBe(true);
+
+  // Try to create second admin with different email
+  const result2 = await t.mutation(api.seed.createAdmin, {
+    email: "admin2@capo.dev",
+    name: "Second Admin",
+  });
+
+  expect(result2.success).toBe(false);
+  expect(result2.message).toContain("already exist");
+  expect(result2.existingAdmins).toHaveLength(1);
+  expect(result2.existingAdmins[0].email).toBe("admin@capo.dev");
+});
+
+test("createAdmin - returns existing admin if same email", async () => {
+  const t = convexTest(schema);
+
+  // Create admin
+  const result1 = await t.mutation(api.seed.createAdmin, {
+    email: "admin@capo.dev",
+    name: "Capo Admin",
+  });
+
+  expect(result1.success).toBe(true);
+  expect(result1.isNew).toBe(true);
+
+  // Try to create admin with same email
+  const result2 = await t.mutation(api.seed.createAdmin, {
+    email: "admin@capo.dev",
+    name: "Capo Admin",
+  });
+
+  expect(result2.success).toBe(true);
+  expect(result2.message).toBe("Admin user already exists");
+  expect(result2.isNew).toBe(false);
+  expect(result2.admin._id).toBe(result1.admin._id);
+});
+
+test("createAdmin - prevents changing role of existing user", async () => {
+  const t = convexTest(schema);
+
+  // Create a student user directly in database
+  await t.run(async (ctx) => {
+    return await ctx.db.insert("users", {
+      name: "Student User",
+      email: "student@capo.dev",
+      role: "student",
+      gameId: undefined,
+      companyId: undefined,
+    });
+  });
+
+  // Try to create admin with same email
+  const result = await t.mutation(api.seed.createAdmin, {
+    email: "student@capo.dev",
+    name: "Student User",
+  });
+
+  expect(result.success).toBe(false);
+  expect(result.message).toContain("already exists with role student");
+  expect(result.message).toContain("Cannot change role");
+});
