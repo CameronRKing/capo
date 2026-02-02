@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.7",
-    "@auth/core": "^0.34.3",
-    "@convex-dev/agent": "^0.3.2",
+    "@auth/core": "^0.37.0",
+    "@convex-dev/auth": "^0.0.90",
     "@convex-dev/presence": "^0.3.0",
     "@convex-dev/prosemirror-sync": "^0.2.0",
     "@convex-dev/stripe": "^0.1.1",
