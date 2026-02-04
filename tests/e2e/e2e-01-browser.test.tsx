@@ -17,7 +17,7 @@
 
 import React from "react";
 import { test, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor, cleanup, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import { RequestAccessPage } from "../../src/routes/request-access";
 import userEvent from "@testing-library/user-event";
 
@@ -94,12 +94,9 @@ test("E2E-01: Access request form renders correctly", async () => {
 test("E2E-01: Form validation shows errors for empty fields", async () => {
   await renderRequestAccessPage();
 
-  // Get the form element and dispatch submit event
-  const form = document.querySelector("form");
-  expect(form).toBeTruthy();
-
-  // Dispatch submit event directly to trigger React's onSubmit handler
-  form!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  // Get the submit button and click it to trigger React's onSubmit
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  await userEvent.click(submitButton);
 
   // Wait for validation errors to appear
   await waitFor(
@@ -133,9 +130,9 @@ test("E2E-01: Form validates email format", async () => {
   const studentRadio = screen.getAllByRole("radio").find((r: any) => r.value === "student");
   expect(studentRadio).toBeChecked();
 
-  // Dispatch submit event
-  const form = document.querySelector("form");
-  form!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  // Click submit button to trigger validation
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  await userEvent.click(submitButton);
 
   // Should show email validation error
   expect(screen.getByText("Please enter a valid email address")).toBeVisible();
@@ -211,9 +208,9 @@ test("E2E-01: Role selection highlights correctly", async () => {
 test("E2E-01: Form clears errors when user starts typing", async () => {
   await renderRequestAccessPage();
 
-  // Try to submit without filling form
-  const form = document.querySelector("form");
-  form!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  // Try to submit without filling form - click submit button
+  const submitButton = screen.getByRole("button", { name: /submit request/i });
+  await userEvent.click(submitButton);
 
   // Should show errors
   expect(screen.getByText("Name is required")).toBeVisible();
