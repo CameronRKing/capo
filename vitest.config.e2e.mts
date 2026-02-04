@@ -83,7 +83,17 @@ export default defineConfig({
           "@convex-dev/*",
           // Inline testing libraries for browser mode
           "@testing-library/user-event",
+          "@testing-library/dom",
+          "@testing-library/react",
         ],
+        optimizer: {
+          web: {
+            include: [
+              "@testing-library/user-event",
+              "@testing-library/dom",
+            ],
+          },
+        },
       },
     },
     // Coverage (optional, can be enabled separately)

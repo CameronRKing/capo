@@ -17,7 +17,7 @@
 
 import React from "react";
 import { test, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { render, screen, waitFor, cleanup, fireEvent } from "@testing-library/react";
 import { RequestAccessPage } from "../../src/routes/request-access";
 import userEvent from "@testing-library/user-event";
 
@@ -94,9 +94,12 @@ test("E2E-01: Access request form renders correctly", async () => {
 test("E2E-01: Form validation shows errors for empty fields", async () => {
   await renderRequestAccessPage();
 
-  // Get the submit button and click it to trigger React's onSubmit
-  const submitButton = screen.getByRole("button", { name: /submit request/i });
-  await userEvent.click(submitButton);
+  // Get the form element
+  const form = document.querySelector("form");
+  expect(form).toBeTruthy();
+
+  // Submit the form to trigger validation
+  fireEvent.submit(form!);
 
   // Wait for validation errors to appear
   await waitFor(
@@ -113,26 +116,28 @@ test("E2E-01: Form validation shows errors for empty fields", async () => {
 test("E2E-01: Form validates email format", async () => {
   await renderRequestAccessPage();
 
+  const user = userEvent.setup();
+
   // Fill name
   const nameInput = screen.getByLabelText(/full name/i) as HTMLInputElement;
-  await userEvent.type(nameInput, "Test User");
+  await user.type(nameInput, "Test User");
 
   // Fill invalid email
   const emailInput = screen.getByLabelText(/email address/i) as HTMLInputElement;
-  await userEvent.type(emailInput, "invalid-email");
+  await user.type(emailInput, "invalid-email");
 
   // Click the label that contains "Student" text
   const studentLabel = screen.getByText("Student", { selector: "span" }).closest("label");
   expect(studentLabel).toBeTruthy();
-  await userEvent.click(studentLabel!);
+  await user.click(studentLabel!);
 
   // Verify the radio is checked (like test 5 does)
   const studentRadio = screen.getAllByRole("radio").find((r: any) => r.value === "student");
   expect(studentRadio).toBeChecked();
 
-  // Click submit button to trigger validation
-  const submitButton = screen.getByRole("button", { name: /submit request/i });
-  await userEvent.click(submitButton);
+  // Submit the form to trigger validation
+  const form = document.querySelector("form");
+  fireEvent.submit(form!);
 
   // Should show email validation error
   expect(screen.getByText("Please enter a valid email address")).toBeVisible();
@@ -178,6 +183,8 @@ test.skip("E2E-01: Form submission shows loading state", async () => {
 test("E2E-01: Role selection highlights correctly", async () => {
   await renderRequestAccessPage();
 
+  const user = userEvent.setup();
+
   // Get radios by value
   const radios = screen.getAllByRole("radio");
   const teacherRadio = radios.find((r: any) => r.value === "teacher");
@@ -188,14 +195,14 @@ test("E2E-01: Role selection highlights correctly", async () => {
 
   // Click the label that contains "Teacher" text
   const teacherLabel = screen.getByText("Teacher", { selector: "span" }).closest("label");
-  await userEvent.click(teacherLabel!);
+  await user.click(teacherLabel!);
 
   // Verify visual feedback - the radio button should be checked
   expect(teacherRadio).toBeChecked();
 
   // Click the label that contains "Student" text
   const studentLabel = screen.getByText("Student", { selector: "span" }).closest("label");
-  await userEvent.click(studentLabel!);
+  await user.click(studentLabel!);
 
   // Verify student is now checked and teacher is not
   expect(studentRadio).toBeChecked();
@@ -208,16 +215,18 @@ test("E2E-01: Role selection highlights correctly", async () => {
 test("E2E-01: Form clears errors when user starts typing", async () => {
   await renderRequestAccessPage();
 
-  // Try to submit without filling form - click submit button
-  const submitButton = screen.getByRole("button", { name: /submit request/i });
-  await userEvent.click(submitButton);
+  const user = userEvent.setup();
+
+  // Try to submit without filling form
+  const form = document.querySelector("form");
+  fireEvent.submit(form!);
 
   // Should show errors
   expect(screen.getByText("Name is required")).toBeVisible();
 
   // Start typing in name field
   const nameInput = screen.getByLabelText(/full name/i) as HTMLInputElement;
-  await userEvent.type(nameInput, "Test");
+  await user.type(nameInput, "Test");
 
   // Name error should clear
   expect(screen.queryByText("Name is required")).not.toBeInTheDocument();

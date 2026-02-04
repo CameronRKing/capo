@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/compilation")({
 
 type Phase = "hiring" | "leadership";
 
-function AdminCompilationPage() {
+export function AdminCompilationPage() {
   const currentUser = useQuery(api.myFunctions.domain.users.getCurrent);
   const games = useQuery(api.myFunctions.admin.accessRequests.listGames);
 
