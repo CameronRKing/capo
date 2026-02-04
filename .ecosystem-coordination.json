@@ -1,0 +1,7 @@
+{
+  "terra_status": "in_progress",
+  "tannin_status": "baseline_created",
+  "both_ready": false,
+  "last_updated": "2026-02-04T00:31:00Z",
+  "coordination_protocol": "Two-track parallel optimization experiment\n- Track A (/terra-): Uses stable /hain base each iteration\n- Track B (/tannin-): Uses evolving /tannin- base (previous iteration results)\n- Both tracks update this file with their status\n- When both complete, set both_ready=true to trigger final comparison"
+}
