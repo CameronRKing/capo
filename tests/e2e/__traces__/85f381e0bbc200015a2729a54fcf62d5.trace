@@ -1,0 +1,45 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770237149989,"monotonicTime":7335.126,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@231a4be3cbba1bdb3bbf30002f551e06"}
+{"type":"screencast-frame","pageId":"page@271a513ba3aa8bfca61ef252fb27c269","sha1":"page@271a513ba3aa8bfca61ef252fb27c269-1770237150262.jpeg","width":1280,"height":720,"timestamp":7608.883,"frameSwapWallTime":1770237150050.519}
+{"type":"before","callId":"call@64","startTime":8683.024,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"before","callId":"call@66","startTime":8683.302,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@66","endTime":8683.376}
+{"type":"after","callId":"call@64","endTime":8741.237}
+{"type":"before","callId":"call@76","startTime":8820.107,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@76","endTime":8826.304}
+{"type":"screencast-frame","pageId":"page@271a513ba3aa8bfca61ef252fb27c269","sha1":"page@271a513ba3aa8bfca61ef252fb27c269-1770237151568.jpeg","width":1280,"height":720,"timestamp":8914.5,"frameSwapWallTime":1770237151487.45}
+{"type":"before","callId":"call@86","startTime":8936.525,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@86","endTime":9125.047}
+{"type":"before","callId":"call@98","startTime":9170.292,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@98","endTime":9317.795}
+{"type":"before","callId":"call@116","startTime":9512.791,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@118","startTime":9513.352,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@116","endTime":9625.451}
+{"type":"after","callId":"call@118","endTime":9628.031}
+{"type":"before","callId":"call@128","startTime":9908.847,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@128","endTime":10125.003}
+{"type":"before","callId":"call@144","startTime":10426.147,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@146","startTime":10426.37,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@148","startTime":10426.535,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@150","startTime":10426.72,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@152","startTime":10426.874,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@144","endTime":10708.627}
+{"type":"after","callId":"call@146","endTime":10709.04}
+{"type":"after","callId":"call@148","endTime":10710.121}
+{"type":"after","callId":"call@150","endTime":10710.206}
+{"type":"after","callId":"call@152","endTime":10710.273}
+{"type":"before","callId":"call@170","startTime":10827.354,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@172","startTime":10827.537,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@176","startTime":10971.494,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@170","endTime":10974.645}
+{"type":"after","callId":"call@172","endTime":10974.677}
+{"type":"before","callId":"call@202","startTime":11049.797,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@176","endTime":11086.025}
+{"type":"after","callId":"call@202","endTime":11133.265}
+{"type":"before","callId":"call@215","startTime":11169.41,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@227","startTime":11246.92,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"before","callId":"call@229","startTime":11247.456,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@215","endTime":11312.225}
+{"type":"after","callId":"call@227","endTime":11422.182}
+{"type":"after","callId":"call@229","endTime":11422.38}
+{"type":"before","callId":"call@238","startTime":11438.355,"class":"Route","method":"fulfill","params":{"status":200,"headers":[{"name":"content-type","value":"application/javascript"},{"name":"content-length","value":"1660"}],"body":"const module = globalThis[\"__vitest_mocker__\"].getFactoryModule(\"/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/deps/convex_react.js\");\nexport const AuthLoading = module[\"AuthLoading\"];\nexport const Authenticated = module[\"Authenticated\"];\nexport const ConvexProvider = module[\"ConvexProvider\"];\nexport const ConvexProviderWithAuth = module[\"ConvexProviderWithAuth\"];\nexport const ConvexReactClient = module[\"ConvexReactClient\"];\nexport const Unauthenticated = module[\"Unauthenticated\"];\nexport const includePage = module[\"includePage\"];\nexport const insertAtBottomIfLoaded = module[\"insertAtBottomIfLoaded\"];\nexport const insertAtPosition = module[\"insertAtPosition\"];\nexport const insertAtTop = module[\"insertAtTop\"];\nexport const optimisticallyUpdateValueInPaginatedQuery = module[\"optimisticallyUpdateValueInPaginatedQuery\"];\nexport const page = module[\"page\"];\nexport const resetPaginationId = module[\"resetPaginationId\"];\nexport const useAction = module[\"useAction\"];\nexport const useConvex = module[\"useConvex\"];\nexport const useConvexAuth = module[\"useConvexAuth\"];\nexport const useConvexConnectionState = module[\"useConvexConnectionState\"];\nexport const useMutation = module[\"useMutation\"];\nexport const usePaginatedQuery = module[\"usePaginatedQuery\"];\nexport const usePaginatedQueryInternal = module[\"usePaginatedQueryInternal\"];\nexport const usePaginatedQuery_experimental = module[\"usePaginatedQuery_experimental\"];\nexport const usePreloadedQuery = module[\"usePreloadedQuery\"];\nexport const useQueries = module[\"useQueries\"];\nexport const useQuery = module[\"useQuery\"];\nexport const useSubscription = module[\"useSubscription\"];","isBase64":false},"pageId":"page@271a513ba3aa8bfca61ef252fb27c269"}
+{"type":"after","callId":"call@238","endTime":11572.932}

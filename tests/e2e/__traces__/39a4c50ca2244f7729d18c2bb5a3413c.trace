@@ -1,0 +1,14 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770223301047,"monotonicTime":4246.048,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@dedc193bd47f5d4ca6f4358caf870fb5"}
+{"type":"screencast-frame","pageId":"page@ac3ce2ab7e39be7d7d0711323e134d2b","sha1":"page@ac3ce2ab7e39be7d7d0711323e134d2b-1770223301087.jpeg","width":1280,"height":720,"timestamp":4286.028,"frameSwapWallTime":1770223301068.023}
+{"type":"before","callId":"call@30","startTime":9479.969,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@30","endTime":9655.352}
+{"type":"before","callId":"call@38","startTime":9889.957,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@ac3ce2ab7e39be7d7d0711323e134d2b"}
+{"type":"after","callId":"call@38","endTime":10070.605}
+{"type":"before","callId":"call@46","startTime":10111.332,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@ac3ce2ab7e39be7d7d0711323e134d2b"}
+{"type":"after","callId":"call@46","endTime":10117.962}
+{"type":"before","callId":"call@52","startTime":10203.067,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@ac3ce2ab7e39be7d7d0711323e134d2b"}
+{"type":"after","callId":"call@52","endTime":10243.092}
+{"type":"before","callId":"call@62","startTime":10332.819,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@ac3ce2ab7e39be7d7d0711323e134d2b"}
+{"type":"before","callId":"call@64","startTime":10352.671,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@ac3ce2ab7e39be7d7d0711323e134d2b"}
+{"type":"after","callId":"call@62","endTime":10362.518}
+{"type":"after","callId":"call@64","endTime":10362.746}

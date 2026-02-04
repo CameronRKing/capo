@@ -126,9 +126,6 @@ export const compileHiringDecisions = action({
 
       throw error;
     }
-
-      throw error;
-    }
   },
 });
 
@@ -183,9 +180,6 @@ export const compileLeadershipDecisions = action({
     } catch (error: any) {
       // Update compilation record with failure
       await updateCompilationRecordInline(ctx, compilationId, "failed", 0, error.message);
-
-      throw error;
-    }
 
       throw error;
     }

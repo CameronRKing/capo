@@ -26,7 +26,9 @@ afterEach(() => {
   cleanup();
 });
 
-// Mock useMutation to return a mock function
+// NOTE: Minimal mock for useMutation since RequestAccessPage uses it.
+// The tests don't actually call the mutation - they only test form validation.
+// True E2E tests would navigate to the real page and test actual submissions.
 vi.mock("convex/react", async () => {
   const actual = await vi.importActual("convex/react");
   return {
@@ -146,9 +148,10 @@ test("E2E-01: Form validates email format", async () => {
 /**
  * Test 4: Form submission shows loading state
  *
- * NOTE: Skipped because useMutation mock doesn't properly simulate pending state.
- * The mock returns a synchronous function, so the loading state is never shown.
- * This would require mocking useMutation to return a promise that never resolves.
+ * NOTE: Skipped - this test requires actually calling the Convex mutation and observing
+ * the pending state. With real backend (no mocks), this would require setting up
+ * test data and handling async mutation state. Consider rewriting as a true E2E test
+ * that navigates to the page and submits a real form.
  */
 test.skip("E2E-01: Form submission shows loading state", async () => {
   await renderRequestAccessPage();

@@ -1,0 +1,15 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770222796403,"monotonicTime":5892.631,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@f5c4dda0a929667d9c7f2b9270c2a25c"}
+{"type":"screencast-frame","pageId":"page@40d22b31b2da9233942ac1eba93fc39e","sha1":"page@40d22b31b2da9233942ac1eba93fc39e-1770222796667.jpeg","width":1280,"height":720,"timestamp":6156.893,"frameSwapWallTime":1770222796425.566}
+{"type":"before","callId":"call@52","startTime":6871.921,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@52","endTime":6907.279}
+{"type":"before","callId":"call@64","startTime":6997.749,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@40d22b31b2da9233942ac1eba93fc39e"}
+{"type":"after","callId":"call@64","endTime":7057.674}
+{"type":"before","callId":"call@72","startTime":7220.294,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@40d22b31b2da9233942ac1eba93fc39e"}
+{"type":"screencast-frame","pageId":"page@40d22b31b2da9233942ac1eba93fc39e","sha1":"page@40d22b31b2da9233942ac1eba93fc39e-1770222797829.jpeg","width":1280,"height":720,"timestamp":7319.465,"frameSwapWallTime":1770222797666.842}
+{"type":"after","callId":"call@72","endTime":7343.199}
+{"type":"before","callId":"call@84","startTime":7469.672,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@40d22b31b2da9233942ac1eba93fc39e"}
+{"type":"after","callId":"call@84","endTime":7530.032}
+{"type":"before","callId":"call@98","startTime":7701.494,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@40d22b31b2da9233942ac1eba93fc39e"}
+{"type":"before","callId":"call@100","startTime":7701.733,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@40d22b31b2da9233942ac1eba93fc39e"}
+{"type":"after","callId":"call@98","endTime":7817.865}
+{"type":"after","callId":"call@100","endTime":7817.957}

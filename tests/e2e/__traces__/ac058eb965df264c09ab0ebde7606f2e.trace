@@ -1,0 +1,46 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770227039296,"monotonicTime":3532.505,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@69b483bc3caf788f5c19c52b642e2221"}
+{"type":"screencast-frame","pageId":"page@fea08112882d7d3f1c72fdeeca58ed56","sha1":"page@fea08112882d7d3f1c72fdeeca58ed56-1770227039333.jpeg","width":1280,"height":720,"timestamp":3569.727,"frameSwapWallTime":1770227039315.424}
+{"type":"before","callId":"call@8","startTime":3780.214,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"before","callId":"call@10","startTime":3782.533,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@10","endTime":3782.716}
+{"type":"before","callId":"call@12","startTime":3783.061,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@12","endTime":3787.543}
+{"type":"before","callId":"call@14","startTime":3787.86,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@14","endTime":3787.969}
+{"type":"after","callId":"call@8","endTime":3802.635}
+{"type":"before","callId":"call@16","startTime":3818.004,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@16","endTime":3820.037}
+{"type":"before","callId":"call@18","startTime":3879.837,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@18","endTime":3881.249}
+{"type":"before","callId":"call@20","startTime":3908.755,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@20","endTime":3917.992}
+{"type":"before","callId":"call@22","startTime":4024.291,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@24","startTime":4024.741,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@22","endTime":4025.054}
+{"type":"after","callId":"call@24","endTime":4025.629}
+{"type":"before","callId":"call@26","startTime":4210.744,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@26","endTime":4212.055}
+{"type":"before","callId":"call@28","startTime":4379.782,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@30","startTime":4408.892,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@32","startTime":4409.222,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@28","endTime":4409.396}
+{"type":"before","callId":"call@34","startTime":4410.45,"class":"Route","method":"fulfill","params":{"status":200,"headers":[{"name":"content-type","value":"application/javascript"},{"name":"content-length","value":"152"}],"body":"const module = globalThis[\"__vitest_mocker__\"].getFactoryModule(\"/src/hooks/useCurrentUser.ts\");\nexport const useCurrentUser = module[\"useCurrentUser\"];","isBase64":false},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@36","startTime":4412.329,"class":"Route","method":"fulfill","params":{"status":200,"headers":[{"name":"content-type","value":"application/javascript"},{"name":"content-length","value":"193"}],"body":"const module = globalThis[\"__vitest_mocker__\"].getFactoryModule(\"/src/components/collaboration/CompanyPresenceHeader.tsx\");\nexport const CompanyPresenceHeader = module[\"CompanyPresenceHeader\"];","isBase64":false},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@38","startTime":4412.744,"class":"Route","method":"fulfill","params":{"status":200,"headers":[{"name":"content-type","value":"application/javascript"},{"name":"content-length","value":"172"}],"body":"const module = globalThis[\"__vitest_mocker__\"].getFactoryModule(\"/src/components/collaboration/FocusIndicator.tsx\");\nexport const FocusIndicator = module[\"FocusIndicator\"];","isBase64":false},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@30","endTime":4431.63}
+{"type":"after","callId":"call@32","endTime":4431.762}
+{"type":"after","callId":"call@34","endTime":4445.501}
+{"type":"after","callId":"call@36","endTime":4445.667}
+{"type":"after","callId":"call@38","endTime":4445.714}
+{"type":"before","callId":"call@40","startTime":4481.228,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@42","startTime":4481.697,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"before","callId":"call@44","startTime":4509.847,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@40","endTime":4510.574}
+{"type":"after","callId":"call@42","endTime":4510.7}
+{"type":"after","callId":"call@44","endTime":4526.028}
+{"type":"before","callId":"call@46","startTime":4530.92,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@46","endTime":4551.707}
+{"type":"before","callId":"call@48","startTime":4557.101,"class":"Route","method":"fulfill","params":{"status":200,"headers":[{"name":"content-type","value":"application/javascript"},{"name":"content-length","value":"1660"}],"body":"const module = globalThis[\"__vitest_mocker__\"].getFactoryModule(\"/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/deps/convex_react.js\");\nexport const AuthLoading = module[\"AuthLoading\"];\nexport const Authenticated = module[\"Authenticated\"];\nexport const ConvexProvider = module[\"ConvexProvider\"];\nexport const ConvexProviderWithAuth = module[\"ConvexProviderWithAuth\"];\nexport const ConvexReactClient = module[\"ConvexReactClient\"];\nexport const Unauthenticated = module[\"Unauthenticated\"];\nexport const includePage = module[\"includePage\"];\nexport const insertAtBottomIfLoaded = module[\"insertAtBottomIfLoaded\"];\nexport const insertAtPosition = module[\"insertAtPosition\"];\nexport const insertAtTop = module[\"insertAtTop\"];\nexport const optimisticallyUpdateValueInPaginatedQuery = module[\"optimisticallyUpdateValueInPaginatedQuery\"];\nexport const page = module[\"page\"];\nexport const resetPaginationId = module[\"resetPaginationId\"];\nexport const useAction = module[\"useAction\"];\nexport const useConvex = module[\"useConvex\"];\nexport const useConvexAuth = module[\"useConvexAuth\"];\nexport const useConvexConnectionState = module[\"useConvexConnectionState\"];\nexport const useMutation = module[\"useMutation\"];\nexport const usePaginatedQuery = module[\"usePaginatedQuery\"];\nexport const usePaginatedQueryInternal = module[\"usePaginatedQueryInternal\"];\nexport const usePaginatedQuery_experimental = module[\"usePaginatedQuery_experimental\"];\nexport const usePreloadedQuery = module[\"usePreloadedQuery\"];\nexport const useQueries = module[\"useQueries\"];\nexport const useQuery = module[\"useQuery\"];\nexport const useSubscription = module[\"useSubscription\"];","isBase64":false},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@48","endTime":4560.839}
+{"type":"before","callId":"call@50","startTime":4619.879,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@fea08112882d7d3f1c72fdeeca58ed56"}
+{"type":"after","callId":"call@50","endTime":4621.635}

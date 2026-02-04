@@ -238,7 +238,7 @@ describe("Hiring Compilation", () => {
     });
 
     // Run compilation for Q1
-    const result = await t.action(api.compilation._compileHiringDecisions, {
+    const result = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 1,
     });
@@ -352,7 +352,7 @@ describe("Hiring Compilation", () => {
     }
 
     // Run compilation for Q2
-    const result = await t.action(api.compilation._compileHiringDecisions, {
+    const result = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 2,
     });
@@ -430,7 +430,7 @@ describe("Hiring Compilation", () => {
     });
 
     // Run compilation
-    const result = await t.action(api.compilation._compileHiringDecisions, {
+    const result = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 1,
     });
@@ -549,7 +549,7 @@ describe("Hiring Compilation", () => {
     });
 
     // Run compilation
-    const result = await t.action(api.compilation._compileHiringDecisions, {
+    const result = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 2,
     });
@@ -623,12 +623,12 @@ describe("Hiring Compilation", () => {
     });
 
     // Run compilation twice with same seed
-    const result1 = await t.action(api.compilation._compileHiringDecisions, {
+    const result1 = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 1,
     });
 
-    const result2 = await t.action(api.compilation._compileHiringDecisions, {
+    const result2 = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 1,
     });
@@ -655,7 +655,7 @@ describe("Hiring Compilation", () => {
       });
     });
 
-    const companies: string[] = [];
+    const companies: Id<"companies">[] = [];
     for (let i = 1; i <= 4; i++) {
       const companyId = await t.run(async (ctx) => {
         return await ctx.db.insert("companies", {
@@ -718,7 +718,7 @@ describe("Hiring Compilation", () => {
     }
 
     // Run compilation
-    const result = await t.action(api.compilation._compileHiringDecisions, {
+    const result = await t.action(api.compilation.hiring._compileHiringDecisions, {
       gameId,
       quarter: 2,
     });

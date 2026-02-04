@@ -18,7 +18,7 @@ export type Role = "admin" | "teacher" | "student";
  * Authenticated user with role and assignments
  */
 export interface User {
-  _id: string;
+  _id: Id<"users">;
   name: string;
   email: string;
   role: Role;
@@ -29,11 +29,13 @@ export interface User {
 /**
  * Retrieve the currently authenticated user from the Convex context
  *
- * @param ctx - The Convex query context
+ * @param ctx - The Convex query context or action context
  * @returns The authenticated user with role and assignments
  * @throws Error if not authenticated or user not found
  */
-export async function getCurrentUser(ctx: QueryCtx): Promise<User> {
+export async function getCurrentUser(ctx: QueryCtx): Promise<User>;
+export async function getCurrentUser(ctx: ActionCtx): Promise<User>;
+export async function getCurrentUser(ctx: QueryCtx | ActionCtx): Promise<User> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Not authenticated");

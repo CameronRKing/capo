@@ -1,0 +1,14 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770223353964,"monotonicTime":3858.731,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@c18eeca2d9d047b5e0b07c65370797e9"}
+{"type":"screencast-frame","pageId":"page@6f62fd93284fb77672c63b75ada88370","sha1":"page@6f62fd93284fb77672c63b75ada88370-1770223354012.jpeg","width":1280,"height":720,"timestamp":3906.264,"frameSwapWallTime":1770223353986.783}
+{"type":"before","callId":"call@24","startTime":4170.206,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@24","endTime":4207.538}
+{"type":"before","callId":"call@30","startTime":4286.996,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@6f62fd93284fb77672c63b75ada88370"}
+{"type":"after","callId":"call@30","endTime":4291.671}
+{"type":"before","callId":"call@34","startTime":4343.475,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@6f62fd93284fb77672c63b75ada88370"}
+{"type":"after","callId":"call@34","endTime":4352.096}
+{"type":"before","callId":"call@40","startTime":4370.833,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@6f62fd93284fb77672c63b75ada88370"}
+{"type":"after","callId":"call@40","endTime":4387.137}
+{"type":"before","callId":"call@48","startTime":4506.728,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@6f62fd93284fb77672c63b75ada88370"}
+{"type":"before","callId":"call@50","startTime":4507.273,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@6f62fd93284fb77672c63b75ada88370"}
+{"type":"after","callId":"call@48","endTime":4548.946}
+{"type":"after","callId":"call@50","endTime":4549.183}

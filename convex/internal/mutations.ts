@@ -167,3 +167,23 @@ export const updateCompilationRecord = mutation({
     });
   },
 });
+
+/**
+ * Helper: Update a game (for testing)
+ *
+ * Allows E2E tests to modify game state for phase transitions,
+ * quarter progression, and status changes.
+ */
+export const updateGame = mutation({
+  args: {
+    gameId: v.id("games"),
+    currentQuarter: v.optional(v.number()),
+    currentPhase: v.optional(v.union(v.literal("hiring"), v.literal("leadership"))),
+    status: v.optional(v.union(v.literal("setup"), v.literal("active"), v.literal("completed"))),
+  },
+  handler: async (ctx, args) => {
+    const { gameId, ...updates } = args;
+    await ctx.db.patch(gameId, updates);
+    return { success: true };
+  },
+});

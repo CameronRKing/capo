@@ -18,7 +18,7 @@
  */
 
 import React from "react";
-import { test, expect, vi, afterEach } from "vitest";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -71,78 +71,13 @@ const mockUsers = {
   },
 };
 
-// Mock useQuery to return different auth states
-vi.mock("convex/react", async () => {
-  const actual = await vi.importActual("convex/react");
-  return {
-    ...actual,
-    useQuery: vi.fn(),
-  };
-});
-
-/**
- * Helper: Mock useCurrentUser to return specific user
- */
-function mockCurrentUser(user: typeof mockUsers[keyof typeof mockUsers] | null | undefined) {
-  const { useQuery } = require("convex/react");
-  useQuery.mockReturnValue(user);
-}
-
-/**
- * Helper: Create a mock router context for testing
- */
-function createMockRouter(search: Record<string, string> = {}) {
-  return {
-    useSearch: vi.fn(() => search),
-  };
-}
+// NOTE: Removed vi.mock("convex/react") and mock-dependent tests (Tests 1-3).
+// These tested useCurrentUser hook behavior with mocked query results, which is
+// not appropriate for E2E tests. True E2E tests should test actual authentication
+// flows with real backend data, not mocked hook responses.
 
 // ============================================================================
-// TEST SUITE 1: useCurrentUser Hook Behavior
-// ============================================================================
-
-/**
- * Test 1: useCurrentUser returns user when authenticated
- */
-test.skip("E2E-02: useCurrentUser returns authenticated user", async () => {
-  const { useQuery } = require("convex/react");
-  useQuery.mockReturnValue(mockUsers.teacher);
-
-  const { useCurrentUser } = require("../../src/hooks/useCurrentUser");
-  const user = useCurrentUser();
-
-  expect(user).toEqual(mockUsers.teacher);
-  expect(user?.role).toBe("teacher");
-});
-
-/**
- * Test 2: useCurrentUser returns null when not authenticated
- */
-test.skip("E2E-02: useCurrentUser returns null when not authenticated", async () => {
-  const { useQuery } = require("convex/react");
-  useQuery.mockReturnValue(null);
-
-  const { useCurrentUser } = require("../../src/hooks/useCurrentUser");
-  const user = useCurrentUser();
-
-  expect(user).toBeNull();
-});
-
-/**
- * Test 3: useCurrentUser returns undefined while loading
- */
-test.skip("E2E-02: useCurrentUser returns undefined while loading", async () => {
-  const { useQuery } = require("convex/react");
-  useQuery.mockReturnValue(undefined);
-
-  const { useCurrentUser } = require("../../src/hooks/useCurrentUser");
-  const user = useCurrentUser();
-
-  expect(user).toBeUndefined();
-});
-
-// ============================================================================
-// TEST SUITE 2: Role-Based Data Structures
+// TEST SUITE 1: Role-Based Data Structures
 // ============================================================================
 
 /**
@@ -388,27 +323,10 @@ test("E2E-02: Cross-role dashboard access is prevented", async () => {
 
 /**
  * Test 13: Loading states prevent flash of wrong content
+ *
+ * NOTE: Removed - this was a unit test testing a simple render function, not an E2E test.
+ * True E2E tests should test actual loading states in the UI with real backend data.
  */
-test.skip("E2E-02: Loading states prevent unauthorized content flash", async () => {
-  const renderState = (user: typeof mockUsers[keyof typeof mockUsers] | null | undefined) => {
-    if (user === undefined) {
-      return <div>Loading...</div>;
-    }
-    if (user === null) {
-      return <div>Please log in</div>;
-    }
-    return <div>Welcome {user.name}</div>;
-  };
-
-  // Verify loading state is shown for undefined
-  expect(renderState(undefined)).toEqual(<div>Loading...</div>);
-
-  // Verify auth state is checked
-  expect(renderState(null)).toEqual(<div>Please log in</div>);
-
-  // Verify content is shown for authenticated user
-  expect(renderState(mockUsers.teacher)).toEqual(<div>Welcome Teacher User</div>);
-});
 
 /**
  * Test 14: Dashboard-specific loading states

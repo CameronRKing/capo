@@ -1,0 +1,16 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770222777967,"monotonicTime":5800.257,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@df10d437e4df5abdbc2933ce1d5d5d79"}
+{"type":"screencast-frame","pageId":"page@0c313b170f08e26ef539c9ca741be0ed","sha1":"page@0c313b170f08e26ef539c9ca741be0ed-1770222778071.jpeg","width":1280,"height":720,"timestamp":5903.713,"frameSwapWallTime":1770222778020.647}
+{"type":"before","callId":"call@44","startTime":6446.974,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@44","endTime":6627.132}
+{"type":"before","callId":"call@56","startTime":6952.742,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@0c313b170f08e26ef539c9ca741be0ed"}
+{"type":"after","callId":"call@56","endTime":7001.726}
+{"type":"before","callId":"call@68","startTime":7141.774,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@0c313b170f08e26ef539c9ca741be0ed"}
+{"type":"screencast-frame","pageId":"page@0c313b170f08e26ef539c9ca741be0ed","sha1":"page@0c313b170f08e26ef539c9ca741be0ed-1770222779363.jpeg","width":1280,"height":720,"timestamp":7196.328,"frameSwapWallTime":1770222779299.853}
+{"type":"after","callId":"call@68","endTime":7196.747}
+{"type":"screencast-frame","pageId":"page@0c313b170f08e26ef539c9ca741be0ed","sha1":"page@0c313b170f08e26ef539c9ca741be0ed-1770222779389.jpeg","width":1280,"height":720,"timestamp":7221.886,"frameSwapWallTime":1770222779350.019}
+{"type":"before","callId":"call@78","startTime":7261.083,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@0c313b170f08e26ef539c9ca741be0ed"}
+{"type":"after","callId":"call@78","endTime":7365.653}
+{"type":"before","callId":"call@88","startTime":7535.754,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@0c313b170f08e26ef539c9ca741be0ed"}
+{"type":"before","callId":"call@90","startTime":7536.688,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@0c313b170f08e26ef539c9ca741be0ed"}
+{"type":"after","callId":"call@88","endTime":7626.547}
+{"type":"after","callId":"call@90","endTime":7626.85}

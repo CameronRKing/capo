@@ -53,6 +53,7 @@ import type * as teacher_monitoring from "../teacher/monitoring.js";
 import type * as test_compilationHelpers from "../test/compilationHelpers.js";
 import type * as test_index from "../test/index.js";
 import type * as test_testHelpers from "../test/testHelpers.js";
+import type * as testHelpers from "../testHelpers.js";
 import type * as users from "../users.js";
 
 import type {
@@ -107,6 +108,7 @@ declare const fullApi: ApiFromModules<{
   "test/compilationHelpers": typeof test_compilationHelpers;
   "test/index": typeof test_index;
   "test/testHelpers": typeof test_testHelpers;
+  testHelpers: typeof testHelpers;
   users: typeof users;
 }>;
 
