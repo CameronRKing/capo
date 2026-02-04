@@ -65,8 +65,11 @@ export const getStudentProgress = queryWithRLS({
           };
         }
 
+        // Type guard: companyId is now guaranteed to be defined
+        const companyId = student.companyId;
+
         // Get company info
-        const company = await ctx.db.get(student.companyId);
+        const company = await ctx.db.get(companyId);
 
         // Check submission status for current phase
         let hasSubmitted = false;
@@ -76,7 +79,7 @@ export const getStudentProgress = queryWithRLS({
           const hiringDecision = await ctx.db
             .query("hiringDecisions")
             .withIndex("by_company_quarter", (q) =>
-              q.eq("companyId", student.companyId).eq("quarter", currentQuarter)
+              q.eq("companyId", companyId).eq("quarter", currentQuarter)
             )
             .first();
 
@@ -88,7 +91,7 @@ export const getStudentProgress = queryWithRLS({
           const leadershipDecision = await ctx.db
             .query("leadershipDecisions")
             .withIndex("by_company_quarter", (q) =>
-              q.eq("companyId", student.companyId).eq("quarter", currentQuarter)
+              q.eq("companyId", companyId).eq("quarter", currentQuarter)
             )
             .first();
 
@@ -102,7 +105,7 @@ export const getStudentProgress = queryWithRLS({
           userId: student._id,
           name: student.name,
           email: student.email,
-          companyId: student.companyId,
+          companyId: companyId,
           companyName: company?.name ?? null,
           lastActivity,
           hasSubmittedCurrentPhase: hasSubmitted,
@@ -159,13 +162,16 @@ export const getInactiveStudents = queryWithRLS({
           return null;
         }
 
+        // Type guard: companyId is now guaranteed to be defined
+        const companyId = student.companyId;
+
         // Find most recent activity in current quarter
         let lastActivity = student._creationTime;
 
         const hiringDecision = await ctx.db
           .query("hiringDecisions")
           .withIndex("by_company_quarter", (q) =>
-            q.eq("companyId", student.companyId).eq("quarter", currentQuarter)
+            q.eq("companyId", companyId).eq("quarter", currentQuarter)
           )
           .first();
 
@@ -176,7 +182,7 @@ export const getInactiveStudents = queryWithRLS({
         const leadershipDecision = await ctx.db
           .query("leadershipDecisions")
           .withIndex("by_company_quarter", (q) =>
-            q.eq("companyId", student.companyId).eq("quarter", currentQuarter)
+            q.eq("companyId", companyId).eq("quarter", currentQuarter)
           )
           .first();
 
@@ -186,14 +192,14 @@ export const getInactiveStudents = queryWithRLS({
 
         // Check if inactive
         if (lastActivity < cutoffTime) {
-          const company = await ctx.db.get(student.companyId);
+          const company = await ctx.db.get(companyId);
           const daysSinceLastActivity = Math.floor((Date.now() - lastActivity) / (24 * 60 * 60 * 1000));
 
           return {
             userId: student._id,
             name: student.name,
             email: student.email,
-            companyId: student.companyId,
+            companyId: companyId,
             companyName: company?.name ?? null,
             daysSinceLastActivity,
             lastActivity,

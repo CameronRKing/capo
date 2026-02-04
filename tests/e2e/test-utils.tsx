@@ -2,42 +2,33 @@
  * Test Utilities for E2E Browser Tests
  *
  * Provides mock Convex setup and test helpers to run E2E tests
- * without requiring a deployed Convex backend.
+ * without requiring authentication or deployed backend.
  */
 
 import React, { ReactNode } from "react";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { vi } from "vitest";
 
 /**
- * Create a Convex client that handles errors gracefully during tests
+ * Create a mock Convex client for E2E testing
  *
- * This allows tests to run without all Convex functions being deployed.
+ * In browser mode with mocked useQuery, we don't need a real client.
+ * This is a placeholder object that satisfies TypeScript requirements.
  */
 export function createTestConvexClient() {
-  const convexUrl = import.meta.env.VITE_CONVEX_URL || "http://127.0.0.1:3210";
-
-  const client = new ConvexReactClient(convexUrl, {
-    // Suppress errors from missing functions during tests
-    unsuppressedErrors: {
-      suppress: (error) => {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        // Suppress Convex errors about missing functions
-        return (
-          errorMessage.includes("Could not find public function") ||
-          errorMessage.includes("Server Error")
-        );
-      },
-    },
-  });
-
-  return client;
+  // Return a mock object - useQuery is already mocked to return null
+  return {
+    query: vi.fn(),
+    mutation: vi.fn(),
+    action: vi.fn(),
+    subscription: vi.fn(),
+  };
 }
 
 /**
- * Test provider wrapper with error-tolerant Convex client
+ * Test provider wrapper with Convex client
  */
 export function TestConvexProvider({ children }: { children: ReactNode }) {
   const client = createTestConvexClient();
 
-  return <ConvexProvider client={client}>{children}</ConvexProvider>;
+  return <div>{children}</div>;
 }

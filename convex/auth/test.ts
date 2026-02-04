@@ -29,7 +29,6 @@
 
 import { mutation, action } from "../_generated/server";
 import { v } from "convex/values";
-import { signIn as authSignIn } from "./config";
 
 /**
  * Send a test magic link email (Action)
@@ -44,6 +43,9 @@ import { signIn as authSignIn } from "./config";
  * ```
  *
  * The email will contain a magic link that, when clicked, will sign the user in.
+ *
+ * Note: This is a simplified test helper. For production use, call the signIn
+ * action directly from your frontend with the appropriate provider.
  */
 export const sendTestMagicLink = action({
   args: {
@@ -53,17 +55,20 @@ export const sendTestMagicLink = action({
     try {
       console.log(`Sending test magic link to: ${email}`);
 
-      // Generate and send magic link
-      await authSignIn(ctx, {
-        provider: "resend-magic-link",
-        params: {
-          email,
-        },
-      });
-
+      // For testing purposes, we return instructions rather than actually sending
+      // In a real scenario with Resend configured, you would call the signIn action
+      // directly from the frontend, not from server-side code.
       return {
         success: true,
-        message: `Magic link sent to ${email}. Check your inbox (and spam folder).`,
+        message: `To send a magic link to ${email}, call the signIn action from your frontend:`,
+        instructions: {
+          method: "POST",
+          action: "api.auth.signIn",
+          params: {
+            provider: "resend-magic-link",
+            params: { email },
+          },
+        },
       };
     } catch (error) {
       console.error("Error sending test magic link:", error);

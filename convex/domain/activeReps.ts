@@ -7,6 +7,7 @@
 
 import { v } from "convex/values";
 import { queryWithRLS, mutationWithRLS } from "../services/rowLevelSecurity";
+import type { Doc } from "../_generated/dataModel";
 
 /**
  * List all active reps for a company in a specific quarter
@@ -38,7 +39,7 @@ export const get = queryWithRLS({
   args: {
     id: v.id("activeReps"),
   },
-  handler: async (ctx, { id }) => {
+  handler: async (ctx, { id }): Promise<Doc<"activeReps"> | null> => {
     return await ctx.db.get(id);
   },
 });
@@ -52,7 +53,13 @@ export const updateRepSettings = mutationWithRLS({
   args: {
     repId: v.id("activeReps"),
     individualHours: v.number(),
-    leadershipBehavior: v.string(),
+    leadershipBehavior: v.union(
+      v.literal("Praise"),
+      v.literal("Punishment"),
+      v.literal("Rules"),
+      v.literal("Goals"),
+      v.literal("Support")
+    ),
   },
   handler: async (ctx, { repId, individualHours, leadershipBehavior }) => {
     // Verify the rep exists and user has access (enforced by RLS)
@@ -82,7 +89,13 @@ export const bulkUpdateRepSettings = mutationWithRLS({
       v.object({
         repId: v.id("activeReps"),
         individualHours: v.number(),
-        leadershipBehavior: v.string(),
+        leadershipBehavior: v.union(
+          v.literal("Praise"),
+          v.literal("Punishment"),
+          v.literal("Rules"),
+          v.literal("Goals"),
+          v.literal("Support")
+        ),
       })
     ),
   },

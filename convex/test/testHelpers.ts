@@ -1,10 +1,24 @@
 import { convexTest } from "convex-test";
+import type { GenericMutationCtx, GenericActionCtx, GenericDataModel } from "convex/server";
 import schema from "../schema";
 
 /**
  * Test helper context type
+ *
+ * The test context provides access to both mutation and action capabilities
+ * via the `run` method. We extract the DataModel from our schema definition.
  */
-export type TestContext = ReturnType<typeof convexTest<typeof schema>>;
+type DataModel = GenericDataModel;
+
+export type TestContext = {
+  query: ReturnType<typeof convexTest>["query"];
+  mutation: ReturnType<typeof convexTest>["mutation"];
+  action: ReturnType<typeof convexTest>["action"];
+  run: <Output>(
+    func: (ctx: GenericMutationCtx<DataModel> & Pick<GenericActionCtx<DataModel>, "storage">) => Promise<Output>
+  ) => Promise<Output>;
+  fetch: ReturnType<typeof convexTest>["fetch"];
+};
 
 /**
  * Setup helper that creates a test schema entry
@@ -316,7 +330,7 @@ export async function clearTable(t: TestContext, tableName: string) {
   return await t.run(async (ctx) => {
     const entries = await ctx.db.query(tableName as any).collect();
     for (const entry of entries) {
-      await ctx.db.delete(entry._id);
+      await ctx.db.delete(entry._id as any);
     }
   });
 }

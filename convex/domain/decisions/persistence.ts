@@ -22,6 +22,7 @@ import {
   type HiringDecision,
   type LeadershipDecision,
 } from "./validators";
+import type { Doc, Id } from "../../_generated/dataModel";
 
 // =====================================================
 // Hiring Decision Functions
@@ -38,7 +39,7 @@ export const getHiringDecisionWorking = queryWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<Doc<"hiringDecisions"> | null> => {
     const decision = await ctx.db
       .query("hiringDecisions")
       .withIndex("by_company_quarter", (q) =>
@@ -92,7 +93,7 @@ export const saveHiringDecisionWorking = mutationWithRLS({
       firingList: v.array(v.id("activeReps")),
     }),
   },
-  handler: async (ctx, { companyId, quarter, data }) => {
+  handler: async (ctx, { companyId, quarter, data }): Promise<Id<"hiringDecisions">> => {
     // Validate with Zod schema
     const validatedData = hiringDecisionSchema.parse(data);
 
@@ -143,7 +144,7 @@ export const submitHiringDecision = mutationWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<Id<"hiringDecisions">> => {
     // Get the working decision
     const decision = await ctx.db
       .query("hiringDecisions")
@@ -197,7 +198,7 @@ export const getLeadershipDecisionWorking = queryWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<Doc<"leadershipDecisions"> | null> => {
     const decision = await ctx.db
       .query("leadershipDecisions")
       .withIndex("by_company_quarter", (q) =>
@@ -234,7 +235,7 @@ export const saveLeadershipDecisionWorking = mutationWithRLS({
       buyPerformanceReport: v.boolean(),
     }),
   },
-  handler: async (ctx, { companyId, quarter, data }) => {
+  handler: async (ctx, { companyId, quarter, data }): Promise<Id<"leadershipDecisions">> => {
     // Validate with Zod schema
     const validatedData = leadershipDecisionSchema.parse(data);
 
@@ -284,7 +285,7 @@ export const submitLeadershipDecision = mutationWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<Id<"leadershipDecisions">> => {
     // Get the working decision
     const decision = await ctx.db
       .query("leadershipDecisions")
@@ -335,7 +336,10 @@ export const getSubmittedDecisions = queryWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<{
+    hiring: Doc<"hiringDecisions"> | null;
+    leadership: Doc<"leadershipDecisions"> | null;
+  }> => {
     // Get submitted hiring decision
     const hiringDecision = await ctx.db
       .query("hiringDecisions")

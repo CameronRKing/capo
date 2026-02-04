@@ -11,8 +11,8 @@
 
 import { convexTest } from "convex-test";
 import { expect, test, describe } from "vitest";
-import { api } from "./_generated/api";
-import schema from "./schema";
+import { api } from "../_generated/api";
+import schema from "../schema";
 
 describe("Teacher Dashboard - getDashboardData", () => {
   test("returns dashboard data for teacher's assigned game", async () => {

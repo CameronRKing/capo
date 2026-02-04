@@ -12,8 +12,9 @@
  * 5. Students: Auto-select to least-populated company
  */
 
-import { mutation, query } from "../_generated/server";
+import { mutation, query, MutationCtx } from "../_generated/server";
 import { v } from "convex/values";
+import { Id } from "../_generated/dataModel";
 
 /**
  * Public mutation: Create an access request
@@ -317,9 +318,9 @@ export const listDirectGrantOptions = query({
  * @returns The ID of the least-populated company
  */
 async function findLeastPopulatedCompany(
-  ctx: any,
-  gameId: any
-): Promise<any> {
+  ctx: MutationCtx,
+  gameId: Id<"games">
+): Promise<Id<"companies">> {
   // Get all companies in the game
   const companies = await ctx.db
     .query("companies")

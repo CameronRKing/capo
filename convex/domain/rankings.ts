@@ -22,6 +22,7 @@
 
 import { v } from "convex/values";
 import { mutationWithRLS, queryWithRLS } from "../services/rowLevelSecurity";
+import type { Doc, Id } from "../_generated/dataModel";
 
 /**
  * Query: Get current user's private rankings
@@ -35,7 +36,11 @@ export const getMyRankings = queryWithRLS({
   args: {
     companyId: v.id("companies"),
   },
-  handler: async (ctx, { companyId }) => {
+  handler: async (ctx, { companyId }): Promise<{
+    A: Doc<"resumeRankings">[];
+    B: Doc<"resumeRankings">[];
+    C: Doc<"resumeRankings">[];
+  }> => {
     // RLS automatically filters to only return rankings where:
     // - For students: userId === ctx.user._id
     const rankings = await ctx.db
@@ -70,7 +75,17 @@ export const getTeammateRankings = queryWithRLS({
   args: {
     companyId: v.id("companies"),
   },
-  handler: async (ctx, { companyId }) => {
+  handler: async (ctx, { companyId }): Promise<Record<
+    Id<"users">,
+    {
+      userName: string;
+      rankings: {
+        A: Doc<"resumeRankings">[];
+        B: Doc<"resumeRankings">[];
+        C: Doc<"resumeRankings">[];
+      };
+    }
+  >> => {
     // Fetch all users in the company
     const companyUsers = await ctx.db
       .query("users")
@@ -86,13 +101,13 @@ export const getTeammateRankings = queryWithRLS({
 
     // Group by user for collaborative view
     const byUser: Record<
-      string,
+      Id<"users">,
       {
         userName: string;
         rankings: {
-          A: typeof rankings;
-          B: typeof rankings;
-          C: typeof rankings;
+          A: Doc<"resumeRankings">[];
+          B: Doc<"resumeRankings">[];
+          C: Doc<"resumeRankings">[];
         };
       }
     > = {};
@@ -124,7 +139,7 @@ export const getUnrankedResumes = queryWithRLS({
   args: {
     companyId: v.id("companies"),
   },
-  handler: async (ctx, { companyId }) => {
+  handler: async (ctx, { companyId }): Promise<Doc<"resumes">[]> => {
     // Get user's current rankings
     const rankings = await ctx.db
       .query("resumeRankings")
@@ -157,7 +172,7 @@ export const saveRanking = mutationWithRLS({
     group: v.union(v.literal("A"), v.literal("B"), v.literal("C")),
     rank: v.number(),
   },
-  handler: async (ctx, { companyId, repId, group, rank }) => {
+  handler: async (ctx, { companyId, repId, group, rank }): Promise<Id<"resumeRankings">> => {
     // Check if ranking already exists
     const existing = await ctx.db
       .query("resumeRankings")
@@ -207,8 +222,8 @@ export const saveRankingsBatch = mutationWithRLS({
       })
     ),
   },
-  handler: async (ctx, { companyId, rankings }) => {
-    const results = [];
+  handler: async (ctx, { companyId, rankings }): Promise<Id<"resumeRankings">[]> => {
+    const results: Id<"resumeRankings">[] = [];
 
     for (const ranking of rankings) {
       const existing = await ctx.db
@@ -252,7 +267,7 @@ export const deleteRanking = mutationWithRLS({
     companyId: v.id("companies"),
     repId: v.string(),
   },
-  handler: async (ctx, { companyId, repId }) => {
+  handler: async (ctx, { companyId, repId }): Promise<boolean> => {
     const existing = await ctx.db
       .query("resumeRankings")
       .withIndex("by_user_company", (q) =>
@@ -281,7 +296,12 @@ export const getRankingSummary = queryWithRLS({
     userId: v.id("users"),
     companyId: v.id("companies"),
   },
-  handler: async (ctx, { userId, companyId }) => {
+  handler: async (ctx, { userId, companyId }): Promise<{
+    total: number;
+    A: number;
+    B: number;
+    C: number;
+  }> => {
     const rankings = await ctx.db
       .query("resumeRankings")
       .withIndex("by_user_company", (q) => q.eq("userId", userId).eq("companyId", companyId))
@@ -306,7 +326,7 @@ export const hasCompletedRanking = queryWithRLS({
     companyId: v.id("companies"),
     minRequired: v.optional(v.number()), // Optional minimum count
   },
-  handler: async (ctx, { companyId, minRequired = 10 }) => {
+  handler: async (ctx, { companyId, minRequired = 10 }): Promise<boolean> => {
     const rankings = await ctx.db
       .query("resumeRankings")
       .withIndex("by_user_company", (q) =>
@@ -331,7 +351,7 @@ export const getHiringList = queryWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<string[]> => {
     const hiringList = await ctx.db
       .query("hiringLists")
       .withIndex("by_company_quarter", (q) =>
@@ -366,7 +386,7 @@ export const generateHiringList = mutationWithRLS({
     companyId: v.id("companies"),
     quarter: v.number(),
   },
-  handler: async (ctx, { companyId, quarter }) => {
+  handler: async (ctx, { companyId, quarter }): Promise<Id<"hiringLists">> => {
     // Import algorithm functions
     const { calculateCompanyHiringList } = await import("./rankings/algorithm");
 

@@ -1,6 +1,7 @@
 import { action } from "../_generated/server";
 import { v } from "convex/values";
-import { 
+import { api } from "../_generated/api";
+import {
   COST_OF_GOODS,
   MANAGER_SALARY_QTR,
   MANAGER_COMMISSION,
@@ -30,7 +31,7 @@ export const _compileLeadershipDecisions = action({
   },
   handler: async (ctx, { gameId, quarter }) => {
     // 1. Get all companies in the game
-    const companies = await ctx.runQuery(ctx.api.domain.internal.listGameCompanies, { gameId });
+    const companies = await ctx.runQuery(api.domain.internal.listGameCompanies, { gameId });
 
     if (!companies || companies.length === 0) {
       throw new Error(`No companies found for game ${gameId}`);
@@ -48,12 +49,12 @@ export const _compileLeadershipDecisions = action({
       try {
         // 2. Get or create default leadership decisions
         const leadershipDecisions = await ctx.runQuery(
-          ctx.api.domain.internal.getOrCreateDefaultLeadershipDecisions,
+          api.domain.internal.getOrCreateDefaultLeadershipDecisions,
           { companyId: company._id, quarter }
         );
 
         // 3. Get all active reps for this company
-        const activeReps = await ctx.runQuery(ctx.api.domain.internal.listActiveRepsByCompanyQuarter, {
+        const activeReps = await ctx.runQuery(api.domain.internal.listActiveRepsByCompanyQuarter, {
           companyId: company._id,
           quarter,
         });
@@ -71,7 +72,7 @@ export const _compileLeadershipDecisions = action({
           repPerformances.push(performance);
 
           // Write performance report to database
-          await ctx.runMutation(ctx.api.domain.reports.createRepPerformance, {
+          await ctx.runMutation(api.domain.reports.createRepPerformance, {
             companyId: company._id,
             quarter,
             repId: rep.repId,
@@ -91,7 +92,7 @@ export const _compileLeadershipDecisions = action({
         );
 
         // Write financial report to database
-        await ctx.runMutation(ctx.api.domain.reports.createFinancial, {
+        await ctx.runMutation(api.domain.reports.createFinancial, {
           companyId: company._id,
           quarter,
           ...financialData,

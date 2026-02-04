@@ -1,31 +1,28 @@
 /**
  * Convex Auth Configuration
  *
- * Configures @convex-dev/auth with magic link authentication.
+ * TEMPORARY: Auth DISABLED - using simplified ?user={email} query param for E2E testing
  *
- * Docs: https://labs.convex.dev/auth/config/email
- * Example: https://github.com/get-convex/convex-auth-with-role-based-permissions
+ * Current state:
+ * - No providers configured (auth disabled)
+ * - Frontend uses ?user={email} URL param for test authentication
+ * - See bd-2tk for proper Mailgun magic link implementation
+ *
+ * Docs:
+ * - Password setup: https://labs.convex.dev/auth/config/passwords
+ * - Custom email: https://labs.convex.dev/auth/api_reference/providers/Email
  */
 
-// "use node";  // Temporarily disabled due to Node version compatibility issue
-
 import { convexAuth } from "@convex-dev/auth/server";
-// import { Resend } from "./email";
 import { callbacks } from "./callbacks";
 
 /**
- * Auth instance with magic link provider
+ * Auth instance - DISABLED for simplified testing
  *
- * Configuration:
- * - Provider: Resend email service for magic links
- * - Expiration: 15 minutes (900 seconds)
- * - Replay prevention: Built-in to @convex-dev/auth via token tracking
- * - Custom callbacks: Integrates with users table and access request workflow
- *
- * TEMPORARY: Email provider disabled due to bundling issues
- * TODO: Fix email provider integration
+ * Using ?user={email} query param approach instead.
+ * Run convex.seed.createTestUsers to seed test accounts.
  */
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
-  providers: [], // Disabled temporarily: [Resend]
-  callbacks,
+  providers: [], // Disabled - using ?user={email} query param for testing
+  callbacks: callbacks as any, // Type assertion for auth library compatibility
 });

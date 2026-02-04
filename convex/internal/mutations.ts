@@ -124,3 +124,46 @@ export const createLeadershipDecision = mutation({
     return await ctx.db.insert("leadershipDecisions", args);
   },
 });
+
+/**
+ * Helper: Create a compilation record
+ */
+export const createCompilationRecord = mutation({
+  args: {
+    gameId: v.id("games"),
+    quarter: v.number(),
+    phase: v.union(v.literal("hiring"), v.literal("leadership")),
+    compiledBy: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("compilations", {
+      gameId: args.gameId,
+      quarter: args.quarter,
+      phase: args.phase,
+      status: "pending",
+      startedAt: Date.now(),
+      compiledBy: args.compiledBy,
+      companiesProcessed: 0,
+    });
+  },
+});
+
+/**
+ * Helper: Update a compilation record
+ */
+export const updateCompilationRecord = mutation({
+  args: {
+    compilationId: v.id("compilations"),
+    status: v.union(v.literal("success"), v.literal("failed")),
+    companiesProcessed: v.number(),
+    errorMessage: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.compilationId, {
+      status: args.status,
+      completedAt: Date.now(),
+      companiesProcessed: args.companiesProcessed,
+      errorMessage: args.errorMessage,
+    });
+  },
+});

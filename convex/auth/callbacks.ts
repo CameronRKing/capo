@@ -14,8 +14,7 @@
  * Reference: https://labs.convex.dev/auth/config
  */
 
-import type { GenericMutationCtx } from "convex/server";
-import type { DataModel } from "../_generated/dataModel";
+import type { GenericMutationCtx, GenericDataModel } from "convex/server";
 
 /**
  * Custom createOrUpdateUser callback
@@ -24,30 +23,32 @@ import type { DataModel } from "../_generated/dataModel";
  * This callback is responsible for creating or updating the user document.
  *
  * For email magic links, this is called when the user clicks the link in their email.
+ *
+ * Note: Typed with GenericMutationCtx<any> for compatibility with @convex-dev/auth
+ * which expects callbacks that work with any DataModel, not just our specific one.
  */
-export async function createOrUpdateUserCallback(
-  ctx: GenericMutationCtx<DataModel>,
+export const createOrUpdateUser = async (
+  ctx: GenericMutationCtx<any>,
   args: {
-    /**
-     * If this is a sign-in to an existing account, this is the existing user ID.
-     * For new sign-ins, this is null.
-     */
     existingUserId: string | null;
-    /**
-     * Profile data from the auth provider (email magic link)
-     */
     profile: {
-      email: string;
+      email?: string;
       name?: string;
+      [key: string]: any;
     };
-    /**
-     * If true, this is a new account being created (user is signing in for the first time).
-     */
-    isNewUser: boolean;
+    [key: string]: any;
   }
-): Promise<string> {
-  const { existingUserId, profile, isNewUser } = args;
-  const { email } = profile;
+): Promise<string> => {
+  const { existingUserId, profile } = args;
+  const email = profile.email;
+
+  // Validate email exists
+  if (!email) {
+    throw new Error("Email is required from auth provider");
+  }
+
+  // Determine if this is a new user (existingUserId is null)
+  const isNewUser = existingUserId === null;
 
   console.log(`createOrUpdateUser callback called for email: ${email}, existingUserId: ${existingUserId}, isNewUser: ${isNewUser}`);
 
@@ -95,7 +96,7 @@ export async function createOrUpdateUserCallback(
   );
 
   return userId;
-}
+};
 
 /**
  * Callback configuration for @convex-dev/auth
@@ -108,5 +109,5 @@ export const callbacks = {
    *
    * This integrates with our users table and access control workflow.
    */
-  createOrUpdateUser: createOrUpdateUserCallback,
+  createOrUpdateUser,
 };

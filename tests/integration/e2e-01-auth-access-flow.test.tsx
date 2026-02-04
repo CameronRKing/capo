@@ -20,7 +20,7 @@ import {
   createApprovedAccessRequest,
   createTestUser,
   MockResendService,
-} from "./helpers/fixtures";
+} from "../e2e/helpers/fixtures";
 
 /**
  * Setup test database and mock services

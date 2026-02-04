@@ -1,5 +1,6 @@
 import { action } from "../_generated/server";
 import { v } from "convex/values";
+import { internal } from "../_generated/api";
 import { MIN_REPS, MAX_HIRE_COUNT, ASSUMED_SALES_PER_QTR, RECRUITING_BONUS } from "../services/constants";
 import { SALES_CONTEST_MULTIPLIER } from "../domain/decisions/validators";
 
@@ -22,7 +23,7 @@ export const _compileHiringDecisions = action({
   },
   handler: async (ctx, { gameId, quarter }) => {
     // 1. Get all companies in the game
-    const companies = await ctx.runQuery(ctx.api.internal.listGameCompanies, { gameId });
+    const companies = await ctx.runQuery(internal.listGameCompanies, { gameId });
 
     if (!companies || companies.length === 0) {
       throw new Error(`No companies found for game ${gameId}`);
@@ -46,17 +47,17 @@ export const _compileHiringDecisions = action({
 
     for (const company of companies) {
       try {
-        const decisions = await ctx.runQuery(ctx.api.internal.getHiringDecision, {
+        const decisions = await ctx.runQuery(internal.getHiringDecision, {
           companyId: company._id,
           quarter,
         });
 
-        const activeReps = await ctx.runQuery(ctx.api.internal.getActiveReps, {
+        const activeReps = await ctx.runQuery(internal.getActiveReps, {
           companyId: company._id,
           quarter,
         });
 
-        const hiringList = await ctx.runQuery(ctx.api.internal.getHiringList, {
+        const hiringList = await ctx.runQuery(internal.getHiringList, {
           companyId: company._id,
           quarter,
         });
@@ -100,7 +101,10 @@ export const _compileHiringDecisions = action({
     // 5. Generate outcome reports for each company
     for (const data of companyData) {
       try {
-        const oldRepOutcomes = data.activeReps.map((rep) => {
+        const oldRepOutcomes: Array<{
+          repId: string;
+          outcome: "retained" | "poached";
+        }> = data.activeReps.map((rep) => {
           const poached = poachingEvents.find(
             (p) => p.fromCompanyId === data.company._id && p.repId === rep.repId
           );
@@ -108,10 +112,13 @@ export const _compileHiringDecisions = action({
           return {
             repId: rep.repId,
             outcome: poached ? "poached" : "retained",
-          } as const;
+          };
         });
 
-        const newRepOutcomes = hiringOutcomes
+        const newRepOutcomes: Array<{
+          repId: string;
+          outcome: "hired" | "not_hired";
+        }> = hiringOutcomes
           .filter((h) => h.toCompanyId === data.company._id)
           .map((h) => ({
             repId: h.repId,
@@ -128,7 +135,7 @@ export const _compileHiringDecisions = action({
           }
         }
 
-        await ctx.runMutation(ctx.api.internal.createHiringOutcomeReport, {
+        await ctx.runMutation(internal.createHiringOutcomeReport, {
           companyId: data.company._id,
           quarter,
           oldRepOutcomes,

@@ -36,7 +36,7 @@ export default defineConfig({
   test: {
     // Environment variables for tests
     env: {
-      VITE_CONVEX_URL: process.env.VITE_CONVEX_URL || "http://127.0.0.1:3210",
+      VITE_CONVEX_URL: process.env.VITE_CONVEX_URL || "https://charming-bass-286.convex.cloud",
     },
     // Browser mode configuration
     browser: {
@@ -81,6 +81,8 @@ export default defineConfig({
           "convex",
           "convex/react",
           "@convex-dev/*",
+          // Inline testing libraries for browser mode
+          "@testing-library/user-event",
         ],
       },
     },

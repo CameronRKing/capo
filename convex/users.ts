@@ -31,6 +31,30 @@ export const getCurrent = query({
 });
 
 /**
+ * Get user by email (for simplified test auth)
+ *
+ * TEMPORARY: Used for E2E testing with ?user={email} query param
+ * Skips Convex Auth and directly looks up user by email.
+ *
+ * Security note: Only use for development/E2E testing. Remove in production.
+ *
+ * @param email - User email to look up
+ * @returns The user or null if not found
+ */
+export const getByEmail = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, { email }) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+    return user ?? null;
+  },
+});
+
+/**
  * Get user by ID
  *
  * Fetches a specific user by their ID.

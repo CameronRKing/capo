@@ -24,7 +24,7 @@
  * - Ties: Broken alphabetically by rep name
  */
 
-import { Doc } from "../_generated/dataModel";
+import type { Doc, Id } from "../../_generated/dataModel";
 
 /**
  * Represents a student's ranking with its ordinal position
@@ -188,7 +188,7 @@ export function bordaCount(
  * @returns Ordered array of rep IDs (hiring list)
  */
 export function calculateCompanyHiringList(
-  studentRankings: Map<string, Array<Doc<"resumeRankings">>>,
+  studentRankings: Map<Id<"users">, Array<Doc<"resumeRankings">>>,
   resumeNames: Map<string, string>
 ): string[] {
   // Convert Map values to array of ranking arrays

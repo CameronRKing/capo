@@ -11,10 +11,66 @@
  * 3. Submission completion (optional, via proceedWithDefaults)
  */
 
-import { action, query, mutation, internalQuery, internalMutation } from "../_generated/server";
+import { action, query, ActionCtx, QueryCtx } from "../_generated/server";
 import { v } from "convex/values";
 import { api } from "../_generated/api";
-import { getCurrentUser, hasRole, canAccessGame } from "../services/permissions";
+import { Id } from "../_generated/dataModel";
+import { getCurrentUser, hasRole, User } from "../services/permissions";
+
+// Type definitions for compilation results
+interface HiringCompilationResult {
+  success: boolean;
+  companiesProcessed: number;
+  poachingEvents: number;
+  hiringEvents: number;
+  errors: string[];
+}
+
+interface LeadershipCompilationResult {
+  success: boolean;
+  companiesProcessed: number;
+  repsProcessed: number;
+  financialReportsGenerated: number;
+  errors: string[];
+}
+
+interface SubmissionStatus {
+  totalCompanies: number;
+  submittedCompanies: number;
+  missingCompanies: number;
+  missing: Array<{ companyId: string; name: string }>;
+  canProceedWithDefaults: boolean;
+}
+
+interface CompilationWarning {
+  canProceed: false;
+  status: SubmissionStatus;
+  message: string;
+}
+
+interface CompilationHistoryEntry {
+  _id: Id<"compilations">;
+  quarter: number;
+  phase: "hiring" | "leadership";
+  status: "pending" | "success" | "failed";
+  startedAt: number;
+  completedAt: number | null;
+  companiesProcessed: number;
+  errorMessage: string | null;
+  compiledBy: { name: string; email: string } | null;
+}
+
+interface CompilationStatus {
+  _id: Id<"compilations">;
+  status: "pending" | "success" | "failed";
+  startedAt: number;
+  completedAt: number | null;
+  companiesProcessed: number;
+  errorMessage: string | null;
+  compiledBy: { name: string; email: string } | null;
+}
+
+type CtxForAuth = ActionCtx | QueryCtx;
 
 /**
  * Compile hiring decisions for a game/quarter
@@ -32,20 +88,16 @@ export const compileHiringDecisions = action({
     quarter: v.number(),
     proceedWithDefaults: v.optional(v.boolean()),
   },
-  handler: async (ctx, { gameId, quarter, proceedWithDefaults }) => {
+  handler: async (ctx, { gameId, quarter, proceedWithDefaults }): Promise<HiringCompilationResult | CompilationWarning> => {
     // Auth checks
     const user = await requireAdminOrTeacher(ctx);
     await requireGameAccess(ctx, user, gameId);
 
     // Check submission status (warn if incomplete)
     if (!proceedWithDefaults) {
-      const status = await ctx.runQuery(api.internal.admin.compilation.checkSubmissionStatus, {
-        gameId,
-        quarter,
-        phase: "hiring",
-      });
+      const status = await checkSubmissionStatusInline(ctx, gameId, quarter, "hiring");
 
-      if (status.missingCompanies.length > 0) {
+      if (status.missingCompanies > 0) {
         return {
           canProceed: false,
           status,
@@ -55,36 +107,25 @@ export const compileHiringDecisions = action({
     }
 
     // Create compilation record
-    const compilationId = await ctx.runMutation(api.internal.admin.compilation.createCompilationRecord, {
-      gameId,
-      quarter,
-      phase: "hiring",
-      compiledBy: user._id,
-    });
+    const compilationId = await createCompilationRecordInline(ctx, gameId, quarter, "hiring", user._id);
 
     // Call internal compilation
     try {
-      const result = await ctx.runAction(api.compilation.hiring._compileHiringDecisions, {
+      const result: HiringCompilationResult = await ctx.runAction(api.compilation.hiring._compileHiringDecisions, {
         gameId,
         quarter,
       });
 
       // Update compilation record with success
-      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
-        compilationId,
-        status: "success",
-        companiesProcessed: result.companiesProcessed || 0,
-      });
+      await updateCompilationRecordInline(ctx, compilationId, "success", result.companiesProcessed || 0);
 
       return result;
     } catch (error: any) {
       // Update compilation record with failure
-      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
-        compilationId,
-        status: "failed",
-        companiesProcessed: 0,
-        errorMessage: error.message,
-      });
+      await updateCompilationRecordInline(ctx, compilationId, "failed", 0, error.message);
+
+      throw error;
+    }
 
       throw error;
     }
@@ -107,20 +148,16 @@ export const compileLeadershipDecisions = action({
     quarter: v.number(),
     proceedWithDefaults: v.optional(v.boolean()),
   },
-  handler: async (ctx, { gameId, quarter, proceedWithDefaults }) => {
+  handler: async (ctx, { gameId, quarter, proceedWithDefaults }): Promise<LeadershipCompilationResult | CompilationWarning> => {
     // Auth checks
     const user = await requireAdminOrTeacher(ctx);
     await requireGameAccess(ctx, user, gameId);
 
     // Check submission status
     if (!proceedWithDefaults) {
-      const status = await ctx.runQuery(api.internal.admin.compilation.checkSubmissionStatus, {
-        gameId,
-        quarter,
-        phase: "leadership",
-      });
+      const status = await checkSubmissionStatusInline(ctx, gameId, quarter, "leadership");
 
-      if (status.missingCompanies.length > 0) {
+      if (status.missingCompanies > 0) {
         return {
           canProceed: false,
           status,
@@ -130,36 +167,25 @@ export const compileLeadershipDecisions = action({
     }
 
     // Create compilation record
-    const compilationId = await ctx.runMutation(api.internal.admin.compilation.createCompilationRecord, {
-      gameId,
-      quarter,
-      phase: "leadership",
-      compiledBy: user._id,
-    });
+    const compilationId = await createCompilationRecordInline(ctx, gameId, quarter, "leadership", user._id);
 
     // Call internal compilation
     try {
-      const result = await ctx.runAction(api.compilation.leadership._compileLeadershipDecisions, {
+      const result: LeadershipCompilationResult = await ctx.runAction(api.compilation.leadership._compileLeadershipDecisions, {
         gameId,
         quarter,
       });
 
       // Update compilation record with success
-      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
-        compilationId,
-        status: "success",
-        companiesProcessed: result.companiesProcessed || 0,
-      });
+      await updateCompilationRecordInline(ctx, compilationId, "success", result.companiesProcessed || 0);
 
       return result;
     } catch (error: any) {
       // Update compilation record with failure
-      await ctx.runMutation(api.internal.admin.compilation.updateCompilationRecord, {
-        compilationId,
-        status: "failed",
-        companiesProcessed: 0,
-        errorMessage: error.message,
-      });
+      await updateCompilationRecordInline(ctx, compilationId, "failed", 0, error.message);
+
+      throw error;
+    }
 
       throw error;
     }
@@ -167,70 +193,9 @@ export const compileLeadershipDecisions = action({
 });
 
 /**
- * Check submission status for a game/quarter/phase
- *
- * @param gameId - The game to check
- * @param quarter - The quarter number (1-8)
- * @param phase - "hiring" or "leadership"
- * @returns Submission status with list of missing companies
- *
- * Access: Admins (any game), Teachers (assigned game only)
- */
-export const checkSubmissionStatus = internalQuery({
-  args: {
-    gameId: v.id("games"),
-    quarter: v.number(),
-    phase: v.union(v.literal("hiring"), v.literal("leadership")),
-  },
-  handler: async (ctx, { gameId, quarter, phase }) => {
-    // Auth check (read-only, so teachers can check their games)
-    const user = await requireAdminOrTeacher(ctx);
-    await requireGameAccess(ctx, user, gameId);
-
-    // Get all companies in game
-    const companies = await ctx.runQuery(api.internal.listGameCompanies, { gameId });
-
-    const submittedCompanies: Array<{ companyId: string; name: string }> = [];
-    const missingCompanies: Array<{ companyId: string; name: string }> = [];
-
-    for (const company of companies) {
-      let submitted = false;
-
-      if (phase === "hiring") {
-        const decision = await ctx.runQuery(api.internal.getHiringDecision, {
-          companyId: company._id,
-          quarter,
-        });
-        submitted = decision?.submittedAt !== undefined;
-      } else {
-        const decision = await ctx.runQuery(api.internal.getLeadershipDecision, {
-          companyId: company._id,
-          quarter,
-        });
-        submitted = decision?.submittedAt !== undefined;
-      }
-
-      if (submitted) {
-        submittedCompanies.push({ companyId: company._id, name: company.name });
-      } else {
-        missingCompanies.push({ companyId: company._id, name: company.name });
-      }
-    }
-
-    return {
-      totalCompanies: companies.length,
-      submittedCompanies: submittedCompanies.length,
-      missingCompanies: missingCompanies.length,
-      missing: missingCompanies,
-      canProceedWithDefaults: true,
-    };
-  },
-});
-
-/**
  * Helper: Require user has admin or teacher role
  */
-async function requireAdminOrTeacher(ctx: any): Promise<any> {
+async function requireAdminOrTeacher(ctx: CtxForAuth): Promise<User> {
   const user = await getCurrentUser(ctx);
 
   if (!hasRole(user, ["admin", "teacher"])) {
@@ -252,7 +217,7 @@ export const getCompilationHistory = query({
   args: {
     gameId: v.id("games"),
   },
-  handler: async (ctx, { gameId }) => {
+  handler: async (ctx, { gameId }): Promise<CompilationHistoryEntry[]> => {
     // Auth check
     const user = await requireAdminOrTeacher(ctx);
     await requireGameAccess(ctx, user, gameId);
@@ -276,9 +241,9 @@ export const getCompilationHistory = query({
           phase: compilation.phase,
           status: compilation.status,
           startedAt: compilation.startedAt,
-          completedAt: compilation.completedAt,
+          completedAt: compilation.completedAt ?? null,
           companiesProcessed: compilation.companiesProcessed,
-          errorMessage: compilation.errorMessage,
+          errorMessage: compilation.errorMessage ?? null,
           compiledBy: compiledByUser
             ? { name: compiledByUser.name, email: compiledByUser.email }
             : null,
@@ -306,7 +271,7 @@ export const getCompilationStatus = query({
     quarter: v.number(),
     phase: v.union(v.literal("hiring"), v.literal("leadership")),
   },
-  handler: async (ctx, { gameId, quarter, phase }) => {
+  handler: async (ctx, { gameId, quarter, phase }): Promise<CompilationStatus | null> => {
     // Auth check
     const user = await requireAdminOrTeacher(ctx);
     await requireGameAccess(ctx, user, gameId);
@@ -334,9 +299,9 @@ export const getCompilationStatus = query({
       _id: compilation._id,
       status: compilation.status,
       startedAt: compilation.startedAt,
-      completedAt: compilation.completedAt,
+      completedAt: compilation.completedAt ?? null,
       companiesProcessed: compilation.companiesProcessed,
-      errorMessage: compilation.errorMessage,
+      errorMessage: compilation.errorMessage ?? null,
       compiledBy: compiledByUser
         ? { name: compiledByUser.name, email: compiledByUser.email }
         : null,
@@ -347,7 +312,7 @@ export const getCompilationStatus = query({
 /**
  * Helper: Check teacher can access this game
  */
-async function requireGameAccess(ctx: any, user: any, gameId: string) {
+async function requireGameAccess(ctx: CtxForAuth, user: User, gameId: Id<"games">): Promise<void> {
   if (user.role === "admin") return; // Admins can access all games
 
   if (user.role === "teacher") {
@@ -358,62 +323,87 @@ async function requireGameAccess(ctx: any, user: any, gameId: string) {
 }
 
 /**
- * Create a new compilation record
- *
- * @param gameId - The game being compiled
- * @param quarter - The quarter number
- * @param phase - "hiring" or "leadership"
- * @param compiledBy - The user who triggered the compilation
- * @returns The ID of the created compilation record
- *
- * Access: Internal use only by compilation actions
+ * Inline helper: Check submission status for a game/quarter/phase
  */
-export const createCompilationRecord = internalMutation({
-  args: {
-    gameId: v.id("games"),
-    quarter: v.number(),
-    phase: v.union(v.literal("hiring"), v.literal("leadership")),
-    compiledBy: v.id("users"),
-  },
-  handler: async (ctx, { gameId, quarter, phase, compiledBy }) => {
-    const compilationId = await ctx.db.insert("compilations", {
-      gameId,
-      quarter,
-      phase,
-      status: "pending",
-      startedAt: Date.now(),
-      compiledBy,
-      companiesProcessed: 0,
-    });
+async function checkSubmissionStatusInline(
+  ctx: ActionCtx,
+  gameId: Id<"games">,
+  quarter: number,
+  phase: "hiring" | "leadership"
+): Promise<SubmissionStatus> {
+  // Get all companies in game
+  const companies = await ctx.runQuery(api.internal.index.listGameCompanies, { gameId });
 
-    return compilationId;
-  },
-});
+  const submittedCompanies: Array<{ companyId: string; name: string }> = [];
+  const missingCompanies: Array<{ companyId: string; name: string }> = [];
+
+  for (const company of companies) {
+    let submitted = false;
+
+    if (phase === "hiring") {
+      const decision = await ctx.runQuery(api.internal.index.getHiringDecision, {
+        companyId: company._id,
+        quarter,
+      });
+      submitted = decision?.submittedAt !== undefined;
+    } else {
+      const decision = await ctx.runQuery(api.internal.index.getLeadershipDecision, {
+        companyId: company._id,
+        quarter,
+      });
+      submitted = decision?.submittedAt !== undefined;
+    }
+
+    if (submitted) {
+      submittedCompanies.push({ companyId: company._id, name: company.name });
+    } else {
+      missingCompanies.push({ companyId: company._id, name: company.name });
+    }
+  }
+
+  return {
+    totalCompanies: companies.length,
+    submittedCompanies: submittedCompanies.length,
+    missingCompanies: missingCompanies.length,
+    missing: missingCompanies,
+    canProceedWithDefaults: true,
+  };
+}
 
 /**
- * Update a compilation record with results
- *
- * @param compilationId - The compilation to update
- * @param status - "success" or "failed"
- * @param companiesProcessed - Number of companies processed
- * @param errorMessage - Optional error message if failed
- *
- * Access: Internal use only by compilation actions
+ * Inline helper: Create a new compilation record
  */
-export const updateCompilationRecord = internalMutation({
-  args: {
-    compilationId: v.id("compilations"),
-    status: v.union(v.literal("success"), v.literal("failed")),
-    companiesProcessed: v.number(),
-    errorMessage: v.optional(v.string()),
-  },
-  handler: async (ctx, { compilationId, status, companiesProcessed, errorMessage }) => {
-    await ctx.db.patch(compilationId, {
-      status,
-      completedAt: Date.now(),
-      companiesProcessed,
-      errorMessage,
-    });
-  },
-});
+async function createCompilationRecordInline(
+  ctx: ActionCtx,
+  gameId: Id<"games">,
+  quarter: number,
+  phase: "hiring" | "leadership",
+  compiledBy: Id<"users">
+): Promise<Id<"compilations">> {
+  const compilationId = await ctx.runMutation(api.internal.mutations.createCompilationRecord, {
+    gameId,
+    quarter,
+    phase,
+    compiledBy,
+  });
 
+  return compilationId;
+}
+
+/**
+ * Inline helper: Update a compilation record with results
+ */
+async function updateCompilationRecordInline(
+  ctx: ActionCtx,
+  compilationId: Id<"compilations">,
+  status: "success" | "failed",
+  companiesProcessed: number,
+  errorMessage?: string
+): Promise<void> {
+  await ctx.runMutation(api.internal.mutations.updateCompilationRecord, {
+    compilationId,
+    status,
+    companiesProcessed,
+    errorMessage,
+  });
+}

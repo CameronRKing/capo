@@ -10,15 +10,20 @@ export * from "./accessRequests";
 // Active Reps
 export * from "./activeReps";
 
+// Companies
+export * from "./companies";
+
 // Decisions
 export * from "./leadershipDecisions";
 export * from "./decisions/persistence";
+export * from "./decisions/validators";
 
 // Games
 export * from "./games";
 
 // Rankings
 export * from "./rankings";
+export * from "./rankings/algorithm";
 
 // Reports
 export * from "./reports";
@@ -31,9 +36,6 @@ export * from "./territories";
 
 // Users
 export * from "./users";
-
-// Teacher Dashboard
-export * from "../teacher/dashboard";
 
 // Internal
 export * from "./internal";

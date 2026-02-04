@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "npm rebuild esbuild && vite --open",
-    "dev:backend": "convex dev --local",
+    "dev:backend": "convex dev",
     "build": "tsc -b && vite build",
     "lint": "tsc && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -56,6 +56,7 @@
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
+    "@types/testing-library__user-event": "^4.2.0",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/browser": "^4.0.18",
     "@vitest/browser-playwright": "^4.0.18",
