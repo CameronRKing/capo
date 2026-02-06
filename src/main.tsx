@@ -15,23 +15,13 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string;
-console.log('[main.tsx] INIT - Convex URL:', convexUrl);
-
 const convex = new ConvexReactClient(convexUrl);
-
-console.log('[main.tsx] Convex client created');
-console.log('[main.tsx] About to render to root element');
-
 const rootElement = document.getElementById("root");
-console.log('[main.tsx] Root element found:', rootElement);
 
 createRoot(rootElement!).render(
   <StrictMode>
-    {console.log('[main.tsx] StrictMode rendering')}
     <Suspense fallback={<div>Loading...</div>}>
-      {console.log('[main.tsx] Suspense boundary active')}
       <ConvexProvider client={convex}>
-        {console.log('[main.tsx] ConvexProvider rendered')}
         <RouterProvider
           router={router}
           context={{

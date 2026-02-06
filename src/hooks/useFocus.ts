@@ -154,7 +154,7 @@ export function useFocus(
         userId: userId as Id<"users">,
       });
     } catch (error) {
-      console.error("Failed to update focus:", error);
+      // Silently fail - focus updates are non-critical
     }
   }, [fieldId, userId, updateFocusMutation]);
 
@@ -165,7 +165,7 @@ export function useFocus(
     try {
       await clearFocusMutation({ userId: userId as Id<"users"> });
     } catch (error) {
-      console.error("Failed to clear focus:", error);
+      // Silently fail - focus updates are non-critical
     }
   }, [userId, clearFocusMutation]);
 
@@ -174,7 +174,9 @@ export function useFocus(
     return () => {
       // Clear focus when component unmounts
       if (userId) {
-        clearFocusMutation({ userId: userId as Id<"users"> }).catch(console.error);
+        clearFocusMutation({ userId: userId as Id<"users"> }).catch(() => {
+          // Silently fail - cleanup doesn't need to report errors
+        });
       }
     };
   }, [userId, clearFocusMutation]);

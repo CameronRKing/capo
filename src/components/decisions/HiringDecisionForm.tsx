@@ -351,7 +351,7 @@ export function HiringDecisionForm({ companyId, quarter }: HiringDecisionFormPro
           // Clear "saved" status after 2 seconds
           setTimeout(() => setSaveStatus("idle"), 2000);
         } catch (error) {
-          console.error("Auto-save error:", error);
+          // Auto-save failed - error status shown in UI
           setSaveStatus("error");
         }
       }
@@ -385,7 +385,7 @@ export function HiringDecisionForm({ companyId, quarter }: HiringDecisionFormPro
       // TODO: Show success message or redirect
       alert("Hiring decision submitted successfully!");
     } catch (error: any) {
-      console.error("Submit error:", error);
+      // Submit failed - show error to user
       alert(`Error submitting: ${error.message}`);
     } finally {
       setIsSubmitting(false);

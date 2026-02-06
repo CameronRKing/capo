@@ -28,6 +28,7 @@ import { api } from "@convex/_generated/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { PhaseIndicator } from "@/components/decisions/PhaseIndicator";
 import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
+import { ErrorPage } from "@/components/ErrorPage";
 import { ErrorState } from "@/components/ui/ErrorState";
 
 /**

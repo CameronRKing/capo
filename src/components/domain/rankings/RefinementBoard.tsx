@@ -397,8 +397,7 @@ export function RefinementBoard({
           rankings: flatRankings,
         });
       } catch (error) {
-        console.error("Failed to save rankings:", error);
-        // Revert on error
+        // Save failed - revert rankings
         setOptimisticRankings(myRankings ?? { A: [], B: [], C: [] });
       } finally {
         setIsSaving(false);

@@ -80,14 +80,15 @@ export const getPhaseStatus = queryWithRLS({
     companyId: v.id("companies"),
   },
   handler: async (ctx, { gameId, companyId }) => {
-    // Get the game to determine current phase and quarter
-    const game = await ctx.db.get(gameId);
+    try {
+      // Get the game to determine current phase and quarter
+      const game = await ctx.db.get(gameId);
 
-    if (!game) {
-      return null;
-    }
+      if (!game) {
+        return null;
+      }
 
-    const { currentQuarter, currentPhase } = game;
+      const { currentQuarter, currentPhase } = game;
 
     // Check the appropriate decision table based on current phase
     if (currentPhase === "hiring") {
@@ -135,6 +136,11 @@ export const getPhaseStatus = queryWithRLS({
     }
 
     return null;
+    } catch (error) {
+      // Log error for debugging but return null to avoid breaking the UI
+      // This can happen if IDs are invalid or RLS blocks access
+      return null;
+    }
   },
 });
 

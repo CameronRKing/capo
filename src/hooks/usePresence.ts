@@ -137,7 +137,7 @@ export function usePresence(
         // Clear error on successful heartbeat
         errorRef.current = false;
       } catch (error) {
-        console.error("Presence heartbeat failed:", error);
+        // Presence heartbeat failed - will retry on next interval
         errorRef.current = true;
       }
     }, 10000);
@@ -154,7 +154,7 @@ export function usePresence(
           errorRef.current = false;
         })
         .catch((error) => {
-          console.error("Initial presence heartbeat failed:", error);
+          // Initial presence heartbeat failed - will retry
           errorRef.current = true;
         });
     }
@@ -172,8 +172,7 @@ export function usePresence(
             errorRef.current = false;
           })
           .catch((error) => {
-            console.error("Presence disconnect failed:", error);
-            // Don't set error on disconnect - we're cleaning up anyway
+            // Disconnect failed - not critical during cleanup
           });
       }
     };

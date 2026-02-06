@@ -43,7 +43,6 @@ export const Route = createRootRoute({
 });
 
 function RootLayout() {
-  console.log('[__root.tsx] RootLayout rendering Outlet');
   return (
     <Suspense fallback={<LoadingState />}>
       <Outlet />

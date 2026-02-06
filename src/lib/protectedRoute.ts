@@ -120,7 +120,6 @@ export function protectedRoute(
       }
 
       // Other errors - redirect to login
-      console.error("Protected route error:", error);
       throw redirect({
         to: "/login",
         search: {

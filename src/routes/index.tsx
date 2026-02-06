@@ -77,38 +77,30 @@ function IndexRouteComponent() {
   const user = useCurrentUser();
   const search = useSearch({ strict: false }) as { user?: string };
 
-  console.log('[index.tsx] IndexRouteComponent called');
-  console.log('[index.tsx] useCurrentUser returned:', user);
-  console.log('[index.tsx] search params:', search);
-
   // Build query params to preserve user across redirects
   const queryParams = search.user ? { search: { user: search.user } } : {};
 
   // Loading state: User authentication is being checked
   if (user === undefined) {
-    console.log('[index.tsx] Branch: user === undefined (loading)');
     return <LoadingState />;
   }
 
   // Not authenticated: Redirect to login
   if (user === null) {
-    console.log('[index.tsx] Branch: user === null (redirect to login)');
     return <Navigate to="/login" />;
   }
 
   // Authenticated: Redirect based on role
-  console.log('[index.tsx] Branch: authenticated user, role:', user.role);
   switch (user.role) {
     case "admin":
       return <Navigate to="/admin/compilation" {...queryParams} />;
     case "teacher":
       return <Navigate to="/teacher/dashboard" {...queryParams} />;
     case "student":
-      return <Navigate to="/student" {...queryParams} />;
+      return <Navigate to="/student/" {...queryParams} />;
     default:
       // Fallback: If role is unrecognized, redirect to login
       // This shouldn't happen with proper RBAC, but safety first
-      console.error("[index.tsx] Unrecognized user role:", user.role);
       return <Navigate to="/login" />;
   }
 }

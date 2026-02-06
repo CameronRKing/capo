@@ -176,7 +176,7 @@ export function LeadershipDecisionForm({
           // Clear "saved" status after 2 seconds
           setTimeout(() => setSaveStatus("idle"), 2000);
         } catch (error) {
-          console.error("Auto-save failed:", error);
+          // Auto-save failed - error status shown in UI
           setSaveStatus("error");
         }
       }
@@ -231,7 +231,7 @@ export function LeadershipDecisionForm({
       setSubmittedAt(Date.now());
       setShowSubmitConfirm(false);
     } catch (error) {
-      console.error("Submit failed:", error);
+      // Submit failed - show error to user
       alert("Submission failed. Please check your data and try again.");
     }
   };

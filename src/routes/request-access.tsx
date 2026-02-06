@@ -71,7 +71,6 @@ export function RequestAccessPage() {
 
       setSubmitted(true);
     } catch (err: any) {
-      console.error("Access request error:", err);
       setError(err.message || "Failed to submit request. Please try again.");
     } finally {
       setLoading(false);

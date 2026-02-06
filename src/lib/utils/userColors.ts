@@ -128,8 +128,7 @@ function stringHash(str: string): number {
  * @example
  * ```ts
  * const color = getUserColor("user123");
- * console.log(color.name); // "Blue"
- * console.log(color.border); // "border-blue-500"
+ * // Returns: { name: "Blue", hex: "#3B82F6", bg: "bg-blue-500", border: "border-blue-500" }
  * ```
  */
 export function getUserColor(userId: string): UserColor {
@@ -150,8 +149,7 @@ export function getUserColor(userId: string): UserColor {
  * @example
  * ```ts
  * const colors = getDistinctColors(["user1", "user2", "user3"]);
- * console.log(colors.get("user1")?.name); // "Blue"
- * console.log(colors.get("user2")?.name); // "Purple"
+ * // Returns: Map { "user1" => { name: "Blue", ... }, "user2" => { name: "Purple", ... }, ... }
  * ```
  */
 export function getDistinctColors(userIds: string[]): Map<string, UserColor> {
