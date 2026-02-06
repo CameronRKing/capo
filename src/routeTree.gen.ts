@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RequestAccessRouteImport } from './routes/request-access'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentIndexRouteImport } from './routes/student/index'
 import { Route as TeacherStudentsRouteImport } from './routes/teacher/students'
 import { Route as TeacherReportsRouteImport } from './routes/teacher/reports'
@@ -34,6 +35,11 @@ const RequestAccessRoute = RequestAccessRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentIndexRoute = StudentIndexRouteImport.update({
@@ -109,6 +115,7 @@ const StudentDecisionsHiringRoute = StudentDecisionsHiringRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/request-access': typeof RequestAccessRoute
   '/admin/access': typeof AdminAccessRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/student/decisions/': typeof StudentDecisionsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/request-access': typeof RequestAccessRoute
   '/admin/access': typeof AdminAccessRoute
@@ -146,6 +154,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/request-access': typeof RequestAccessRoute
   '/admin/access': typeof AdminAccessRoute
@@ -166,6 +175,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/login'
     | '/request-access'
     | '/admin/access'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/student/decisions/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/login'
     | '/request-access'
     | '/admin/access'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/student/decisions'
   id:
     | '__root__'
+    | '/'
     | '/login'
     | '/request-access'
     | '/admin/access'
@@ -221,6 +233,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   RequestAccessRoute: typeof RequestAccessRoute
   AdminAccessRoute: typeof AdminAccessRoute
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student/': {
@@ -357,6 +377,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   RequestAccessRoute: RequestAccessRoute,
   AdminAccessRoute: AdminAccessRoute,

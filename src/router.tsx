@@ -24,6 +24,20 @@ export const router = createRouter({
   },
 });
 
+// Log router state changes
+router.subscribe('onResolved', (event) => {
+  console.log('[router] Route resolved:', {
+    path: event.toLocation.href,
+    pathname: event.toLocation.pathname,
+    params: event.toLocation.params,
+    search: event.toLocation.search,
+  });
+});
+
+router.subscribe('onError', (event) => {
+  console.error('[router] Router error:', event);
+});
+
 // Register the router for type safety
 declare module '@tanstack/react-router' {
   interface Register {

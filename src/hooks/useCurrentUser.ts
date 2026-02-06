@@ -39,26 +39,38 @@ export type User = Doc<"users">;
  * @returns User object, null, or undefined
  */
 export function useCurrentUser(): User | null | undefined {
+  console.log('[useCurrentUser] Hook called');
+
   // Check for ?user={email} query param (for E2E testing)
   const search = useSearch({ strict: false });
   const testUserEmail = (search as any)?.user as string | null;
+  console.log('[useCurrentUser] URL search params:', search);
+  console.log('[useCurrentUser] Test user email from URL:', testUserEmail);
 
   // If test user email is present, use getByEmail query
   const testUserResult = useQuery(
     api.users.getByEmail,
     testUserEmail ? { email: testUserEmail } : "skip"
   );
+  console.log('[useCurrentUser] testUserResult:', testUserResult);
 
   // Normal auth query
   const normalResult = useQuery(api.users.getCurrent);
+  console.log('[useCurrentUser] normalResult:', normalResult);
 
   // Use test user if available, otherwise use normal auth
   const result = testUserEmail ? testUserResult : normalResult;
+  console.log('[useCurrentUser] Selected result:', result);
 
   // Handle case where query returns undefined or has error
   if (!result || result.error) {
+    console.log('[useCurrentUser] No result or error, returning null');
+    if (result?.error) {
+      console.error('[useCurrentUser] Error from query:', result.error);
+    }
     return null;
   }
 
+  console.log('[useCurrentUser] Returning user:', result);
   return result;
 }
