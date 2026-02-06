@@ -69,8 +69,8 @@ vq wait --file src/components/Button.tsx
 # Wait with timeout and error if no tests run
 vq wait --file src/app.ts --expect-run --timeout 60
 
-# Stream test results as they arrive
-vq wait --file src/utils/helpers.ts --stream-results
+# Stream results as they arrive
+vq wait --file src/utils/formatters.ts --stream-results
 
 # Debug with verbose timestamp comparisons
 vq wait --file src/components/Button.tsx --verbose
@@ -124,7 +124,7 @@ When working with agents/LLMs, you often need to wait for tests triggered by a s
 #    Trigger timestamp: 2024-01-15T10:00:00.500Z
 
 # 3. LLM waits for tests from that specific file
-vq wait --file src/components/Button.tsx --expect-run
+vq wait --file src/components/Button.tsx
 ```
 
 The CLI:
@@ -294,3 +294,98 @@ jobs:
         env:
           VITEST_SERVER_URL: ${{ secrets.VITEST_SERVER_URL }}
 ```
+
+---
+
+# E2E Testing with Playwright
+
+## Important: Use Playwright, NOT Vitest Browser Mode
+
+**E2E tests use Playwright** (`@playwright/test`), not Vitest browser mode.
+
+**Why**: Real Playwright provides better E2E testing with:
+- Real browser automation
+- Better debugging tools
+- Wider ecosystem support
+- Consistent behavior across environments
+
+## Running E2E Tests
+
+**DO NOT start a test watcher for E2E** - just run the tests directly:
+```bash
+npm run test:e2e:playwright
+```
+
+**Use vq for unit/integration tests only** (Vitest tests)
+
+## E2E Test Configuration
+
+- **Framework**: Playwright 1.58.1
+- **Tests**: 211 tests across 15 files
+- **Config**: `playwright.config.cjs`
+- **Test directory**: `tests/e2e/playwright/`
+
+## Before Running E2E Tests
+
+### 1. Start Frontend
+
+```bash
+npm run dev:frontend > /tmp/frontend.log 2>&1 &
+echo $! > /tmp/frontend.pid
+```
+
+### 2. Verify Frontend Running
+
+```bash
+curl -I http://localhost:5173
+# Should return: HTTP/1.1 200 OK
+```
+
+### 3. Run Tests
+
+```bash
+npm run test:e2e:playwright
+```
+
+### 4. Stop Frontend When Done
+
+```bash
+kill $(cat /tmp/frontend.pid)
+```
+
+## E2E Test Authentication
+
+Tests use URL parameter authentication (NOT login forms):
+
+```typescript
+// Login as student
+await page.goto('/?role=student');
+
+// Login as teacher
+await page.goto('/?role=teacher');
+
+// Login as admin
+await page.goto('/?role=admin');
+```
+
+## Backend for E2E Tests
+
+**DO NOT** try to start `convex dev` - it fails with WebSocket errors.
+
+E2E tests use the **production Convex deployment**:
+- URL: `https://charming-bass-286.convex.cloud`
+- Configured in `.env.local`: `VITE_CONVEX_URL=https://charming-bass-286.convex.cloud`
+
+## Service Architecture
+
+- **Frontend**: Host process (Vite on port 5173) - start with `npm run dev:frontend`
+- **Backend**: Production Convex cloud - no local process needed
+
+**See Also**: `SERVICES.md` for complete service management guide
+
+## Documentation
+
+- **Playwright Setup**: `PLAYWRIGHT_SETUP_COMPLETE.md`
+- **Playwright Quick Reference**: `tests/e2e/playwright/PLAYWRIGHT_QUICK_REFERENCE.md`
+- **Playwright Detailed Guide**: `tests/e2e/playwright/PLAYWRIGHT_SETUP.md`
+- **Service Management**: `SERVICES.md`
