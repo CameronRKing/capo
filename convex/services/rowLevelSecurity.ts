@@ -14,7 +14,7 @@ import { customCtx, customMutation, customQuery } from "convex-helpers/server/cu
 import { Rules, wrapDatabaseReader, wrapDatabaseWriter } from "convex-helpers/server/rowLevelSecurity";
 import { DataModel } from "../_generated/dataModel";
 import { mutation, query, QueryCtx } from "../_generated/server";
-import { User, getCurrentUser } from "./permissions";
+import { User, getCurrentUser, getCurrentUserOrTestUser } from "./permissions";
 
 /**
  * Define RLS rules for the business simulation
@@ -341,15 +341,24 @@ async function rlsRules(ctx: QueryCtx, user: User): Promise<Rules<QueryCtx, Data
  *   },
  * });
  */
-export const queryWithRLS = customQuery(query, customCtx(async (ctx) => {
-  const user = await getCurrentUser(ctx);
-  return {
-    db: wrapDatabaseReader(ctx, ctx.db, await rlsRules(ctx, user), {
-      defaultPolicy: "deny", // Deny access by default, only allow if rule returns true
-    }),
-    user,
-  };
-}));
+export const queryWithRLS = customQuery(query, {
+  args: {},
+  input: async (ctx, args) => {
+    // TEMPORARY: Extract test user email from special argument for E2E testing
+    // Frontend can pass { __testUserEmail: "student@test.com" } to specify test user
+    const testUserEmail = (args as any).__testUserEmail;
+    const user = await getCurrentUserOrTestUser(ctx, testUserEmail);
+    return {
+      ctx: {
+        db: wrapDatabaseReader(ctx, ctx.db, await rlsRules(ctx, user), {
+          defaultPolicy: "deny", // Deny access by default, only allow if rule returns true
+        }),
+        user,
+      },
+      args: { ...args, __testUserEmail: undefined }, // Remove the special argument
+    };
+  },
+});
 
 /**
  * Custom mutation builder with automatic RLS enforcement
@@ -369,12 +378,21 @@ export const queryWithRLS = customQuery(query, customCtx(async (ctx) => {
  *   },
  * });
  */
-export const mutationWithRLS = customMutation(mutation, customCtx(async (ctx) => {
-  const user = await getCurrentUser(ctx);
-  return {
-    db: wrapDatabaseWriter(ctx, ctx.db, await rlsRules(ctx, user), {
-      defaultPolicy: "deny",
-    }),
-    user,
-  };
-}));
+export const mutationWithRLS = customMutation(mutation, {
+  args: {},
+  input: async (ctx, args) => {
+    // TEMPORARY: Extract test user email from special argument for E2E testing
+    // Frontend can pass { __testUserEmail: "student@test.com" } to specify test user
+    const testUserEmail = (args as any).__testUserEmail;
+    const user = await getCurrentUserOrTestUser(ctx, testUserEmail);
+    return {
+      ctx: {
+        db: wrapDatabaseWriter(ctx, ctx.db, await rlsRules(ctx, user), {
+          defaultPolicy: "deny",
+        }),
+        user,
+      },
+      args: { ...args, __testUserEmail: undefined }, // Remove the special argument
+    };
+  },
+});

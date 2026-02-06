@@ -21,6 +21,7 @@
 
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useSearch } from "@tanstack/react-router";
 
 /**
  * Loading State Component
@@ -74,9 +75,14 @@ function IndexErrorBoundary({ error }: { error: unknown }) {
  */
 function IndexRouteComponent() {
   const user = useCurrentUser();
+  const search = useSearch({ strict: false }) as { user?: string };
 
   console.log('[index.tsx] IndexRouteComponent called');
   console.log('[index.tsx] useCurrentUser returned:', user);
+  console.log('[index.tsx] search params:', search);
+
+  // Build query params to preserve user across redirects
+  const queryParams = search.user ? { search: { user: search.user } } : {};
 
   // Loading state: User authentication is being checked
   if (user === undefined) {
@@ -94,11 +100,11 @@ function IndexRouteComponent() {
   console.log('[index.tsx] Branch: authenticated user, role:', user.role);
   switch (user.role) {
     case "admin":
-      return <Navigate to="/admin/compilation" />;
+      return <Navigate to="/admin/compilation" {...queryParams} />;
     case "teacher":
-      return <Navigate to="/teacher/dashboard" />;
+      return <Navigate to="/teacher/dashboard" {...queryParams} />;
     case "student":
-      return <Navigate to="/student" />;
+      return <Navigate to="/student" {...queryParams} />;
     default:
       // Fallback: If role is unrecognized, redirect to login
       // This shouldn't happen with proper RBAC, but safety first

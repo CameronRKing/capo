@@ -25,7 +25,7 @@ import React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser, useQueryWithRLS } from "@/hooks/useCurrentUser";
 import { PhaseIndicator } from "@/components/decisions/PhaseIndicator";
 import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
 
@@ -224,8 +224,8 @@ function StatsCard({ label, value, icon, color = "blue" }: StatsCardProps) {
 export function StudentDashboardPage() {
   const user = useCurrentUser();
 
-  // Load dashboard data
-  const dashboardData = useQuery(
+  // Load dashboard data (RLS-protected)
+  const dashboardData = useQueryWithRLS(
     api.student.dashboard.getDashboardData,
     user?.companyId ? { companyId: user.companyId } : "skip"
   );
@@ -242,8 +242,8 @@ export function StudentDashboardPage() {
     user?.userId ? { userId: user.userId } : "skip"
   );
 
-  // Load phase status
-  const phaseStatus = useQuery(
+  // Load phase status (RLS-protected)
+  const phaseStatus = useQueryWithRLS(
     api.games.getPhaseStatus,
     user?.gameId && user?.companyId ? { gameId: user.gameId, companyId: user.companyId } : "skip"
   );

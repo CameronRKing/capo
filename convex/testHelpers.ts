@@ -9,7 +9,7 @@
  */
 
 import { v } from "convex/values";
-import { internalMutation } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
 
 /**
  * Insert a document directly into a table
@@ -144,3 +144,103 @@ export const resetDatabase = internalMutation({
     return { success: true };
   },
 });
+
+/**
+ * TEMPORARY: Authenticate as a test user for E2E testing with ?user={email}
+ *
+ * This query allows frontend to fetch a test user by email for testing purposes.
+ * When ?user=student@test.com is in the URL, the frontend calls this to get the user.
+ *
+ * SECURITY: This bypasses normal authentication. NEVER expose this in production.
+ * This should be disabled or removed before deploying to production.
+ *
+ * @param email - The test user's email (e.g., "student@test.com")
+ * @returns The test user object
+ */
+export const authenticateTestUser = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, { email }) => {
+    // Only allow test user emails
+    const allowedTestUsers = [
+      "student@test.com",
+      "teacher@test.com",
+      "admin@test.com",
+    ];
+
+    if (!allowedTestUsers.includes(email)) {
+      throw new Error(`Not a valid test user email: ${email}`);
+    }
+
+    // Look up the test user
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+
+    if (!user) {
+      throw new Error(`Test user not found: ${email}. Run seed.createTestUsers first.`);
+    }
+
+    return user;
+  },
+});
+
+/**
+ * TEMPORARY: Test user session storage (in-memory)
+ *
+ * Stores the current test user email for each "session".
+ * The frontend calls setTestUserSession when it detects ?user={email} in the URL.
+ * Then RLS queries can read this to know which test user to use.
+ *
+ * LIMITATION: This is per-server-instance and will be lost on restart.
+ * ONLY for development/testing.
+ */
+const testUserSessions = new Map<string, string>(); // sessionId -> email
+
+/**
+ * TEMPORARY: Set the test user for the current session
+ *
+ * Call this when frontend detects ?user={email} in the URL.
+ * Stores the test user email so RLS queries know which user to act as.
+ *
+ * @param sessionId - A unique session identifier (e.g., timestamp + random)
+ * @param email - The test user's email
+ * @returns Success confirmation
+ */
+export const setTestUserSession = internalMutation({
+  args: {
+    sessionId: v.string(),
+    email: v.string(),
+  },
+  handler: async (ctx, { sessionId, email }) => {
+    // Only allow test user emails
+    const allowedTestUsers = [
+      "student@test.com",
+      "teacher@test.com",
+      "admin@test.com",
+    ];
+
+    if (!allowedTestUsers.includes(email)) {
+      throw new Error(`Not a valid test user email: ${email}`);
+    }
+
+    // Store the session
+    testUserSessions.set(sessionId, email);
+
+    return { success: true, email };
+  },
+});
+
+/**
+ * TEMPORARY: Get the test user email for a session
+ *
+ * Called by RLS wrapper to determine which test user to use.
+ *
+ * @param sessionId - The session identifier
+ * @returns The test user email, or undefined if not found
+ */
+export function getTestUserSessionEmail(sessionId: string): string | undefined {
+  return testUserSessions.get(sessionId);
+}

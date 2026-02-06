@@ -9,6 +9,7 @@
 
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useSearch } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -54,21 +55,27 @@ function LoginPage() {
   console.log('[login.tsx] LoginPage component rendering');
 
   const user = useCurrentUser();
+  const search = useSearch({ strict: false }) as { user?: string };
+
   console.log('[login.tsx] useCurrentUser returned:', user);
+  console.log('[login.tsx] search params:', search);
+
+  // Build query params to preserve user across redirects
+  const queryParams = search.user ? { search: { user: search.user } } : {};
 
   // Already authenticated via ?user param - redirect to appropriate dashboard
   if (user) {
     console.log('[login.tsx] User already authenticated, role:', user.role);
     switch (user.role) {
       case "admin":
-        console.log('[login.tsx] Redirecting to /admin/compilation');
-        return <Navigate to="/admin/compilation" />;
+        console.log('[login.tsx] Redirecting to /admin/compilation with params:', queryParams);
+        return <Navigate to="/admin/compilation" {...queryParams} />;
       case "teacher":
-        console.log('[login.tsx] Redirecting to /teacher/dashboard');
-        return <Navigate to="/teacher/dashboard" />;
+        console.log('[login.tsx] Redirecting to /teacher/dashboard with params:', queryParams);
+        return <Navigate to="/teacher/dashboard" {...queryParams} />;
       case "student":
-        console.log('[login.tsx] Redirecting to /student');
-        return <Navigate to="/student" />;
+        console.log('[login.tsx] Redirecting to /student with params:', queryParams);
+        return <Navigate to="/student" {...queryParams} />;
       default:
         console.log('[login.tsx] Unknown role, returning null');
         return null;
