@@ -109,14 +109,14 @@ npm run test:e2e:playwright
 
 **Authentication**:
 Tests use URL parameter authentication:
-- `?role=student` - Login as student
-- `?role=teacher` - Login as teacher
-- `?role=admin` - Login as admin
+- `?user=student@test.com` - Login as student
+- `?user=teacher@test.com` - Login as teacher
+- `?user=admin@test.com` - Login as admin
 
 **Example**:
 ```typescript
 test.beforeEach(async ({ page }) => {
-  await page.goto('/?role=student');
+  await page.goto('/?user=student@test.com');
   await page.waitForTimeout(1000);
 });
 ```

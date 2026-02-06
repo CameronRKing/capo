@@ -47,14 +47,19 @@ E2E tests use URL parameter authentication (NOT login forms):
 
 ```typescript
 // Login as student
-await page.goto('/?role=student');
+await page.goto('/?user=student@test.com');
 
 // Login as teacher
-await page.goto('/?role=teacher');
+await page.goto('/?user=teacher@test.com');
 
 // Login as admin
-await page.goto('/?role=admin');
+await page.goto('/?user=admin@test.com');
 ```
+
+**Test Users**: These users must exist in the database:
+- `student@test.com` (role: student)
+- `teacher@test.com` (role: teacher)
+- `admin@test.com` (role: admin)
 
 ## Service Architecture
 

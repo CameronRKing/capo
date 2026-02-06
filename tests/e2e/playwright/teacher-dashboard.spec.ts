@@ -28,7 +28,7 @@ test.describe('Teacher Dashboard', () => {
   // Setup: Navigate to teacher dashboard with role auth
   test.beforeEach(async ({ page }) => {
     // Use query param for authentication (test mode)
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(1000); // Wait for auth to process
   });
 
@@ -327,7 +327,7 @@ test.describe('Teacher Dashboard', () => {
 
   test('teacher cannot access student areas', async ({ page }) => {
     // Start as teacher
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(500);
 
     // Try to navigate to student area
@@ -348,7 +348,7 @@ test.describe('Teacher Dashboard', () => {
 
   test('teacher cannot access admin compilation', async ({ page }) => {
     // Start as teacher
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(500);
 
     // Try to navigate to admin compilation
@@ -369,7 +369,7 @@ test.describe('Teacher Dashboard', () => {
 
   test('teacher cannot access admin areas', async ({ page }) => {
     // Start as teacher
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(500);
 
     // Try various admin routes
@@ -457,7 +457,7 @@ test.describe('Teacher Dashboard', () => {
 
   test('can navigate to teacher dashboard from home', async ({ page }) => {
     // Start at home with teacher role
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(500);
 
     // Navigate to dashboard
@@ -560,7 +560,7 @@ test.describe('Teacher Dashboard', () => {
 
   test('complete dashboard view workflow', async ({ page }) => {
     // Navigate as teacher
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(500);
 
     // Go to dashboard
@@ -585,7 +585,7 @@ test.describe('Teacher Dashboard', () => {
     await page.waitForTimeout(500);
 
     // Navigate away and back
-    await page.goto('/?role=teacher');
+    await page.goto('/?user=teacher@test.com');
     await page.waitForTimeout(500);
     await page.goto('/teacher/dashboard');
     await page.waitForTimeout(500);

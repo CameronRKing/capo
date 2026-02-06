@@ -7,13 +7,23 @@ import { Page, expect } from '@playwright/test';
 /**
  * Login as a specific role using query param (for testing)
  *
+ * Uses ?user={email} parameter which maps to test users in the database.
+ *
  * Usage:
  *   await loginAs(page, 'student');
  *   await loginAs(page, 'teacher');
  *   await loginAs(page, 'admin');
  */
 export async function loginAs(page: Page, role: 'student' | 'teacher' | 'admin') {
-  await page.goto(`/?role=${role}`);
+  // Map role to test user email
+  const testEmails = {
+    student: 'student@test.com',
+    teacher: 'teacher@test.com',
+    admin: 'admin@test.com',
+  };
+
+  const email = testEmails[role];
+  await page.goto(`/?user=${email}`);
   // Wait for redirect/initialization
   await page.waitForTimeout(1000);
 }

@@ -4,7 +4,7 @@ test.describe('Role-Based Navigation', () => {
   test.describe('Admin Role', () => {
     test('admin redirect to compilation dashboard', async ({ page }) => {
       // Navigate with admin user query param (for testing)
-      await page.goto('/?role=admin');
+      await page.goto('/?user=admin@test.com');
 
       // Wait a moment for redirect
       await page.waitForTimeout(1000);
@@ -17,7 +17,7 @@ test.describe('Role-Based Navigation', () => {
     });
 
     test('admin cannot access student areas', async ({ page }) => {
-      await page.goto('/?role=admin');
+      await page.goto('/?user=admin@test.com');
       await page.waitForTimeout(1000);
 
       // Try to navigate to student area
@@ -34,7 +34,7 @@ test.describe('Role-Based Navigation', () => {
 
   test.describe('Teacher Role', () => {
     test('teacher redirect to teacher dashboard', async ({ page }) => {
-      await page.goto('/?role=teacher');
+      await page.goto('/?user=teacher@test.com');
       await page.waitForTimeout(1000);
 
       const url = page.url();
@@ -45,7 +45,7 @@ test.describe('Role-Based Navigation', () => {
     });
 
     test('teacher can view game overview', async ({ page }) => {
-      await page.goto('/?role=teacher');
+      await page.goto('/?user=teacher@test.com');
       await page.waitForTimeout(1000);
 
       // Look for game/company related content

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Navigation', () => {
   test('main navigation exists', async ({ page }) => {
-    await page.goto('/?role=student');
+    await page.goto('/?user=student@test.com');
     await page.waitForTimeout(1000);
 
     // Look for navigation elements
@@ -13,7 +13,7 @@ test.describe('Navigation', () => {
   });
 
   test('navigation links work', async ({ page }) => {
-    await page.goto('/?role=student');
+    await page.goto('/?user=student@test.com');
     await page.waitForTimeout(1000);
 
     // Look for clickable links
@@ -46,7 +46,7 @@ test.describe('Navigation', () => {
   });
 
   test('back button works', async ({ page }) => {
-    await page.goto('/?role=student');
+    await page.goto('/?user=student@test.com');
     await page.waitForTimeout(1000);
 
     const initialUrl = page.url();
@@ -66,7 +66,7 @@ test.describe('Navigation', () => {
   test('mobile navigation (responsive)', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/?role=student');
+    await page.goto('/?user=student@test.com');
     await page.waitForTimeout(1000);
 
     // Look for mobile menu
@@ -90,7 +90,7 @@ test.describe('Navigation', () => {
   });
 
   test('breadcrumb navigation', async ({ page }) => {
-    await page.goto('/?role=student');
+    await page.goto('/?user=student@test.com');
     await page.goto('/student/hiring');
     await page.waitForTimeout(500);
 
@@ -109,7 +109,7 @@ test.describe('Navigation', () => {
   });
 
   test('tab navigation', async ({ page }) => {
-    await page.goto('/?role=student');
+    await page.goto('/?user=student@test.com');
 
     // Look for tabs
     const tabs = page.locator('[role="tab"]').or(page.locator('.tab'));
