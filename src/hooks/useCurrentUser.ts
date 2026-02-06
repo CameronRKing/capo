@@ -19,7 +19,7 @@
  * }
  */
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Doc } from "@convex/_generated/dataModel";
 import { useLocation } from "@tanstack/react-router";
@@ -68,6 +68,36 @@ export function useQueryWithRLS<Args extends Record<string, any>, ReturnType>(
     : args;
 
   return useQuery(query, enrichedArgs as any);
+}
+
+/**
+ * TEMPORARY: Wrapper around useMutation that automatically injects test user email for RLS
+ *
+ * When ?user={email} is in the URL, this hook automatically adds __testUserEmail
+ * to mutation arguments so the backend RLS knows which test user to use.
+ *
+ * @example
+ * ```tsx
+ * // Instead of:
+ * // const mutate = useMutation(api.presence.heartbeat);
+ *
+ * // Use:
+ * const mutate = useMutationWithRLS(api.presence.heartbeat);
+ * await mutate({ roomId: "...", userId: "...", sessionId: "...", interval: 10000 });
+ * ```
+ *
+ * IMPORTANT: This is a temporary workaround for test mode authentication.
+ * Production should use proper Convex Auth.
+ */
+export function useMutationWithRLS<Args extends Record<string, any>, ReturnType>(
+  mutation: any,
+): (args: Args) => Promise<ReturnType> {
+  const testUserEmail = useTestUserEmail();
+
+  return useMutation(mutation, testUserEmail
+    ? { __testUserEmail: testUserEmail } as any
+    : undefined
+  );
 }
 
 /**

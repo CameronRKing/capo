@@ -326,7 +326,7 @@ async function checkSubmissionStatusInline(
   phase: "hiring" | "leadership"
 ): Promise<SubmissionStatus> {
   // Get all companies in game
-  const companies = await ctx.runQuery(api.internal.index.listGameCompanies, { gameId });
+  const companies = await ctx.runQuery(api.internal.listGameCompanies, { gameId });
 
   const submittedCompanies: Array<{ companyId: string; name: string }> = [];
   const missingCompanies: Array<{ companyId: string; name: string }> = [];
@@ -335,13 +335,13 @@ async function checkSubmissionStatusInline(
     let submitted = false;
 
     if (phase === "hiring") {
-      const decision = await ctx.runQuery(api.internal.index.getHiringDecision, {
+      const decision = await ctx.runQuery(api.internal.getHiringDecision, {
         companyId: company._id,
         quarter,
       });
       submitted = decision?.submittedAt !== undefined;
     } else {
-      const decision = await ctx.runQuery(api.internal.index.getLeadershipDecision, {
+      const decision = await ctx.runQuery(api.internal.getLeadershipDecision, {
         companyId: company._id,
         quarter,
       });

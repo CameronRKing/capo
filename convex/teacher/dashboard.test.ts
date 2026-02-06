@@ -18,62 +18,66 @@ describe("Teacher Dashboard - getDashboardData", () => {
   test("returns dashboard data for teacher's assigned game", async () => {
     const t = convexTest(schema);
 
-    // Create game
-    const gameId = await t.run(api.internal.createGame, {
-      name: "Test Game",
-      currentQuarter: 1,
-      currentPhase: "hiring",
-      length: 8,
-      status: "active",
-    });
+    // Setup: Create game, teacher, and companies
+    const { gameId, teacherId, company1, company2 } = await t.run(async (ctx) => {
+      const gameId = await ctx.db.insert("games", {
+        name: "Test Game",
+        currentQuarter: 1,
+        currentPhase: "hiring",
+        length: 8,
+        status: "active",
+      });
 
-    // Create teacher
-    const teacherId = await t.run(api.internal.createUser, {
-      name: "Teacher User",
-      email: "teacher@example.com",
-      role: "teacher",
-      gameId,
-      companyId: undefined,
-    });
+      const teacherId = await ctx.db.insert("users", {
+        name: "Teacher User",
+        email: "teacher@example.com",
+        role: "teacher",
+        gameId,
+        companyId: undefined,
+      });
 
-    // Create companies
-    const company1 = await t.run(api.internal.createCompany, {
-      gameId,
-      industry: "Manufacturing",
-      name: "Company A",
-    });
+      const company1 = await ctx.db.insert("companies", {
+        gameId,
+        industry: "Manufacturing",
+        name: "Company A",
+      });
 
-    const company2 = await t.run(api.internal.createCompany, {
-      gameId,
-      industry: "Retail",
-      name: "Company B",
+      const company2 = await ctx.db.insert("companies", {
+        gameId,
+        industry: "Retail",
+        name: "Company B",
+      });
+
+      return { gameId, teacherId, company1, company2 };
     });
 
     // Create hiring decision for company1 (submitted)
-    await t.run(api.internal.createHiringDecision, {
-      companyId: company1,
-      quarter: 1,
-      salary: 50000,
-      commission: 10,
-      benefits: "silver",
-      travel: "monthly_per_diem",
-      perDiem: 100,
-      hasSalesContest: true,
-      salesContestType: "open",
-      salesContestThreshold: 50000,
-      trainingProductKnowledge: 25,
-      trainingMarketOrientation: 25,
-      trainingCompanyOrientation: 25,
-      trainingSellingTechniques: 25,
-      numberToHire: 5,
-      firingList: [],
-      isSubmitted: true,
-      submittedBy: teacherId,
-      submittedAt: Date.now(),
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
+        companyId: company1,
+        quarter: 1,
+        salary: 50000,
+        commission: 10,
+        benefits: "silver",
+        travel: "monthly_per_diem",
+        perDiem: 100,
+        hasSalesContest: true,
+        salesContestType: "open",
+        salesContestThreshold: 50000,
+        trainingProductKnowledge: 25,
+        trainingMarketOrientation: 25,
+        trainingCompanyOrientation: 25,
+        trainingSellingTechniques: 25,
+        numberToHire: 5,
+        firingList: [],
+        isSubmitted: true,
+        submittedBy: teacherId,
+        submittedAt: Date.now(),
+      });
     });
 
     // Query dashboard as teacher
-    const dashboardData = await t.run(api.teacher.dashboard.getDashboardData, { gameId });
+    const dashboardData = await t.query(api.teacher.dashboard.getDashboardData, { gameId });
 
     expect(dashboardData).not.toBeNull();
     expect(dashboardData?.game.name).toBe("Test Game");
@@ -88,23 +92,27 @@ describe("Teacher Dashboard - getDashboardData", () => {
   test("handles empty game (no companies)", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Empty Game",
       currentQuarter: 1,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const dashboardData = await t.run(api.teacher.dashboard.getDashboardData, { gameId });
+    const dashboardData = await t.query(api.teacher.dashboard.getDashboardData, { gameId });
 
     expect(dashboardData).not.toBeNull();
     expect(dashboardData?.companyCount).toBe(0);
@@ -115,30 +123,37 @@ describe("Teacher Dashboard - getDashboardData", () => {
   test("handles leadership phase submissions", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "leadership",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const company1 = await t.run(api.internal.createCompany, {
+    const company1 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
     });
+    });
 
     // Create leadership decision
-    await t.run(api.internal.createLeadershipDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("leadershipDecisions", {
       companyId: company1,
       quarter: 1,
       timeRecruiting: 25,
@@ -152,8 +167,9 @@ describe("Teacher Dashboard - getDashboardData", () => {
       submittedBy: teacherId,
       submittedAt: Date.now(),
     });
+    });
 
-    const dashboardData = await t.run(api.teacher.dashboard.getDashboardData, { gameId });
+    const dashboardData = await t.query(api.teacher.dashboard.getDashboardData, { gameId });
 
     expect(dashboardData?.submittedCount).toBe(1);
     expect(dashboardData?.currentPhase).toBe("leadership");
@@ -162,16 +178,18 @@ describe("Teacher Dashboard - getDashboardData", () => {
   test("returns null for non-existent game", async () => {
     const t = convexTest(schema);
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId: undefined as any,
       companyId: undefined,
     });
+    });
 
     const nonExistentId = "nonexistent" as any;
-    const dashboardData = await t.run(api.teacher.dashboard.getDashboardData, {
+    const dashboardData = await t.query(api.teacher.dashboard.getDashboardData, {
       gameId: nonExistentId,
     });
 
@@ -183,36 +201,45 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
   test("lists all companies with submission status", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const company1 = await t.run(api.internal.createCompany, {
+    const company1 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
     });
+    });
 
-    const company2 = await t.run(api.internal.createCompany, {
+    const company2 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Retail",
       name: "Company B",
     });
+    });
 
     // Submit hiring for company1 only
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company1,
       quarter: 1,
       salary: 50000,
@@ -233,8 +260,9 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
       submittedBy: teacherId,
       submittedAt: Date.now(),
     });
+    });
 
-    const statuses = await t.run(api.teacher.dashboard.getCompanyStatuses, { gameId });
+    const statuses = await t.query(api.teacher.dashboard.getCompanyStatuses, { gameId });
 
     expect(statuses).toHaveLength(2);
 
@@ -250,42 +278,53 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
   test("handles mixed submission states", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "leadership",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const company1 = await t.run(api.internal.createCompany, {
+    const company1 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
     });
+    });
 
-    const company2 = await t.run(api.internal.createCompany, {
+    const company2 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Retail",
       name: "Company B",
     });
+    });
 
-    const company3 = await t.run(api.internal.createCompany, {
+    const company3 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Services",
       name: "Company C",
     });
+    });
 
     // Different submission states
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company1,
       quarter: 1,
       salary: 50000,
@@ -305,8 +344,10 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
       submittedBy: teacherId,
       submittedAt: Date.now(),
     });
+    });
 
-    await t.run(api.internal.createLeadershipDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("leadershipDecisions", {
       companyId: company2,
       quarter: 1,
       timeRecruiting: 25,
@@ -320,8 +361,9 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
       submittedBy: teacherId,
       submittedAt: Date.now(),
     });
+    });
 
-    const statuses = await t.run(api.teacher.dashboard.getCompanyStatuses, { gameId });
+    const statuses = await t.query(api.teacher.dashboard.getCompanyStatuses, { gameId });
 
     expect(statuses).toHaveLength(3);
 
@@ -341,39 +383,48 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
   test("sorts by last activity desc", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const company1 = await t.run(api.internal.createCompany, {
+    const company1 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
     });
+    });
 
-    const company2 = await t.run(api.internal.createCompany, {
+    const company2 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Retail",
       name: "Company B",
+    });
     });
 
     const now = Date.now();
     const hourAgo = now - 3600000;
 
     // Company1 submitted recently
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company1,
       quarter: 1,
       salary: 50000,
@@ -393,9 +444,11 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
       submittedBy: teacherId,
       submittedAt: now,
     });
+    });
 
     // Company2 submitted earlier
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company2,
       quarter: 1,
       salary: 45000,
@@ -415,8 +468,9 @@ describe("Teacher Dashboard - getCompanyStatuses", () => {
       submittedBy: teacherId,
       submittedAt: hourAgo,
     });
+    });
 
-    const statuses = await t.run(api.teacher.dashboard.getCompanyStatuses, { gameId });
+    const statuses = await t.query(api.teacher.dashboard.getCompanyStatuses, { gameId });
 
     expect(statuses[0].companyId).toBe(company1);
     expect(statuses[1].companyId).toBe(company2);
@@ -427,23 +481,27 @@ describe("Teacher Dashboard - getUpcomingDeadlines", () => {
   test("returns deadlines for active game in hiring phase", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 2,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const deadlines = await t.run(api.teacher.dashboard.getUpcomingDeadlines, { gameId });
+    const deadlines = await t.query(api.teacher.dashboard.getUpcomingDeadlines, { gameId });
 
     expect(deadlines).not.toBeNull();
     expect(deadlines?.currentPhase).toBe("hiring");
@@ -457,23 +515,27 @@ describe("Teacher Dashboard - getUpcomingDeadlines", () => {
   test("returns deadlines for active game in leadership phase", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 3,
       currentPhase: "leadership",
       length: 8,
       status: "active",
     });
+    });
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const deadlines = await t.run(api.teacher.dashboard.getUpcomingDeadlines, { gameId });
+    const deadlines = await t.query(api.teacher.dashboard.getUpcomingDeadlines, { gameId });
 
     expect(deadlines?.currentPhase).toBe("leadership");
     expect(deadlines?.quarter).toBe(3);
@@ -484,23 +546,27 @@ describe("Teacher Dashboard - getUpcomingDeadlines", () => {
   test("handles completed game", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 8,
       currentPhase: "leadership",
       length: 8,
       status: "completed",
     });
+    });
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const deadlines = await t.run(api.teacher.dashboard.getUpcomingDeadlines, { gameId });
+    const deadlines = await t.query(api.teacher.dashboard.getUpcomingDeadlines, { gameId });
 
     expect(deadlines?.status).toBe("completed");
     expect(deadlines?.nextPhase).toBeNull();
@@ -511,16 +577,18 @@ describe("Teacher Dashboard - getUpcomingDeadlines", () => {
   test("returns null for non-existent game", async () => {
     const t = convexTest(schema);
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId: undefined as any,
       companyId: undefined,
     });
+    });
 
     const nonExistentId = "nonexistent" as any;
-    const deadlines = await t.run(api.teacher.dashboard.getUpcomingDeadlines, {
+    const deadlines = await t.query(api.teacher.dashboard.getUpcomingDeadlines, {
       gameId: nonExistentId,
     });
 
@@ -532,39 +600,48 @@ describe("Teacher Dashboard - getRecentActivity", () => {
   test("returns recent submissions in desc order", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const company1 = await t.run(api.internal.createCompany, {
+    const company1 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
     });
+    });
 
-    const company2 = await t.run(api.internal.createCompany, {
+    const company2 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Retail",
       name: "Company B",
+    });
     });
 
     const now = Date.now();
     const hourAgo = now - 3600000;
 
     // Create submissions at different times
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company1,
       quarter: 1,
       salary: 50000,
@@ -584,8 +661,10 @@ describe("Teacher Dashboard - getRecentActivity", () => {
       submittedBy: teacherId,
       submittedAt: now,
     });
+    });
 
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company2,
       quarter: 1,
       salary: 45000,
@@ -605,8 +684,9 @@ describe("Teacher Dashboard - getRecentActivity", () => {
       submittedBy: teacherId,
       submittedAt: hourAgo,
     });
+    });
 
-    const activity = await t.run(api.teacher.dashboard.getRecentActivity, {
+    const activity = await t.query(api.teacher.dashboard.getRecentActivity, {
       gameId,
       limit: 10,
     });
@@ -620,31 +700,38 @@ describe("Teacher Dashboard - getRecentActivity", () => {
   test("respects limit parameter", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
     // Create 5 companies
     for (let i = 0; i < 5; i++) {
-      const companyId = await t.run(api.internal.createCompany, {
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
         gameId,
         industry: "Manufacturing",
         name: `Company ${i}`,
       });
+      });
 
-      await t.run(api.internal.createHiringDecision, {
+      await t.run(async (ctx) => {
+        await ctx.db.insert("hiringDecisions", {
         companyId,
         quarter: 1,
         salary: 50000,
@@ -664,9 +751,10 @@ describe("Teacher Dashboard - getRecentActivity", () => {
         submittedBy: teacherId,
         submittedAt: Date.now(),
       });
+      });
     }
 
-    const activity = await t.run(api.teacher.dashboard.getRecentActivity, {
+    const activity = await t.query(api.teacher.dashboard.getRecentActivity, {
       gameId,
       limit: 3,
     });
@@ -677,29 +765,35 @@ describe("Teacher Dashboard - getRecentActivity", () => {
   test("returns empty array when no activity", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "hiring",
       length: 8,
       status: "active",
     });
+    });
 
-    await t.run(api.internal.createUser, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    await t.run(api.internal.createCompany, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
     });
+    });
 
-    const activity = await t.run(api.teacher.dashboard.getRecentActivity, {
+    const activity = await t.query(api.teacher.dashboard.getRecentActivity, {
       gameId,
       limit: 10,
     });
@@ -710,32 +804,39 @@ describe("Teacher Dashboard - getRecentActivity", () => {
   test("handles both hiring and leadership submissions", async () => {
     const t = convexTest(schema);
 
-    const gameId = await t.run(api.internal.createGame, {
+    const gameId = await t.run(async (ctx) => {
+      return await ctx.db.insert("games", {
       name: "Test Game",
       currentQuarter: 1,
       currentPhase: "leadership",
       length: 8,
       status: "active",
     });
+    });
 
-    const teacherId = await t.run(api.internal.createUser, {
+    const teacherId = await t.run(async (ctx) => {
+      return await ctx.db.insert("users", {
       name: "Teacher User",
       email: "teacher@example.com",
       role: "teacher",
       gameId,
       companyId: undefined,
     });
+    });
 
-    const company1 = await t.run(api.internal.createCompany, {
+    const company1 = await t.run(async (ctx) => {
+      return await ctx.db.insert("companies", {
       gameId,
       industry: "Manufacturing",
       name: "Company A",
+    });
     });
 
     const now = Date.now();
 
     // Create hiring decision
-    await t.run(api.internal.createHiringDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("hiringDecisions", {
       companyId: company1,
       quarter: 1,
       salary: 50000,
@@ -755,9 +856,11 @@ describe("Teacher Dashboard - getRecentActivity", () => {
       submittedBy: teacherId,
       submittedAt: now - 1000,
     });
+    });
 
     // Create leadership decision
-    await t.run(api.internal.createLeadershipDecision, {
+    await t.run(async (ctx) => {
+      await ctx.db.insert("leadershipDecisions", {
       companyId: company1,
       quarter: 1,
       timeRecruiting: 25,
@@ -771,8 +874,9 @@ describe("Teacher Dashboard - getRecentActivity", () => {
       submittedBy: teacherId,
       submittedAt: now,
     });
+    });
 
-    const activity = await t.run(api.teacher.dashboard.getRecentActivity, {
+    const activity = await t.query(api.teacher.dashboard.getRecentActivity, {
       gameId,
       limit: 10,
     });

@@ -14,7 +14,7 @@
 
 import { convexTest } from "convex-test";
 import { expect, test, describe } from "vitest";
-import schema from "../../schema";
+import schema from "../schema";
 
 describe("Student Dashboard - Core Logic Tests", () => {
   test("getDashboardData logic - calculates active reps count correctly", async () => {

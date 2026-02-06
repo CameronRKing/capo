@@ -28,9 +28,10 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
+import { useQueryWithRLS, useMutationWithRLS } from "./useCurrentUser";
 
 // Color palette for user cursors and avatars
 // Distinct colors accessible for color-blind users
@@ -88,12 +89,12 @@ export interface UsePresenceReturn {
 export function usePresence(
   companyId: Id<"companies"> | string | null | undefined
 ): UsePresenceReturn {
-  // Mutations
-  const heartbeat = useMutation(api.services.presence.heartbeat);
-  const disconnect = useMutation(api.services.presence.disconnect);
+  // Mutations with RLS support for test users
+  const heartbeat = useMutationWithRLS(api.services.presence.heartbeat);
+  const disconnect = useMutationWithRLS(api.services.presence.disconnect);
 
-  // Queries
-  const rawPresence = useQuery(
+  // Query with RLS support for test users
+  const rawPresence = useQueryWithRLS(
     api.services.presence.list,
     companyId ? { roomToken: `company:${companyId}` } : "skip"
   );

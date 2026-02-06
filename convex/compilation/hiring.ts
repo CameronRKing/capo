@@ -1,6 +1,6 @@
 import { action } from "../_generated/server";
 import { v } from "convex/values";
-import { internal } from "../_generated/api";
+import { api } from "../_generated/api";
 import { MIN_REPS, MAX_HIRE_COUNT, ASSUMED_SALES_PER_QTR, RECRUITING_BONUS } from "../services/constants";
 import { SALES_CONTEST_MULTIPLIER } from "../domain/decisions/validators";
 
@@ -23,7 +23,7 @@ export const _compileHiringDecisions = action({
   },
   handler: async (ctx, { gameId, quarter }) => {
     // 1. Get all companies in the game
-    const companies = await ctx.runQuery(internal.listGameCompanies, { gameId });
+    const companies = await ctx.runQuery(api.internal.listGameCompanies, { gameId });
 
     if (!companies || companies.length === 0) {
       throw new Error(`No companies found for game ${gameId}`);
@@ -47,17 +47,17 @@ export const _compileHiringDecisions = action({
 
     for (const company of companies) {
       try {
-        const decisions = await ctx.runQuery(internal.getHiringDecision, {
+        const decisions = await ctx.runQuery(api.internal.getHiringDecision, {
           companyId: company._id,
           quarter,
         });
 
-        const activeReps = await ctx.runQuery(internal.getActiveReps, {
+        const activeReps = await ctx.runQuery(api.internal.getActiveReps, {
           companyId: company._id,
           quarter,
         });
 
-        const hiringList = await ctx.runQuery(internal.getHiringList, {
+        const hiringList = await ctx.runQuery(api.internal.getHiringList, {
           companyId: company._id,
           quarter,
         });
@@ -135,7 +135,7 @@ export const _compileHiringDecisions = action({
           }
         }
 
-        await ctx.runMutation(internal.createHiringOutcomeReport, {
+        await ctx.runMutation(api.internal.createHiringOutcomeReport, {
           companyId: data.company._id,
           quarter,
           oldRepOutcomes,

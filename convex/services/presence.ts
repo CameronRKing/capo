@@ -17,6 +17,7 @@ import { components } from "../_generated/api";
 import { v } from "convex/values";
 import { Presence } from "@convex-dev/presence";
 import { getCurrentUser } from "./permissions";
+import { queryWithRLS, mutationWithRLS } from "./rowLevelSecurity";
 
 /**
  * Presence instance configured with @convex-dev/presence component
@@ -64,7 +65,7 @@ export function getRoomToken(companyId: string): string {
  * });
  * ```
  */
-export const heartbeat = mutation({
+export const heartbeat = mutationWithRLS({
   args: {
     roomId: v.string(),
     userId: v.id("users"),
@@ -73,7 +74,7 @@ export const heartbeat = mutation({
   },
   handler: async (ctx, { roomId, userId, sessionId, interval }) => {
     // Verify user is authenticated and matches the provided userId
-    const currentUser = await getCurrentUser(ctx);
+    const currentUser = ctx.user;
     if (currentUser._id !== userId) {
       throw new Error("User ID does not match authenticated user");
     }
@@ -114,13 +115,13 @@ export const heartbeat = mutation({
  * <FacePile presenceState={onlineUsers ?? []} />
  * ```
  */
-export const list = query({
+export const list = queryWithRLS({
   args: {
     roomToken: v.string(),
   },
   handler: async (ctx, { roomToken }) => {
-    // Verify authentication
-    const user = await getCurrentUser(ctx);
+    // Verify authentication (ctx.user provided by RLS wrapper)
+    const user = ctx.user;
 
     // Validate room format and access
     if (!roomToken.startsWith("company:")) {
@@ -154,13 +155,14 @@ export const list = query({
  * await disconnect({ sessionToken });
  * ```
  */
-export const disconnect = mutation({
+export const disconnect = mutationWithRLS({
   args: {
     sessionToken: v.string(),
   },
   handler: async (ctx, { sessionToken }) => {
     // Verify authentication (optional but recommended for audit)
-    await getCurrentUser(ctx);
+    // ctx.user is provided by RLS wrapper
+    const user = ctx.user;
 
     return await presence.disconnect(ctx, sessionToken);
   },

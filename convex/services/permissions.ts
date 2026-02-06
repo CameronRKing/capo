@@ -71,9 +71,9 @@ export async function setTestUserSession(email: string): Promise<User> {
  * @returns The test user, or null if not found
  */
 export async function getTestUserByEmail(ctx: QueryCtx | ActionCtx, email: string): Promise<User | null> {
-  const user = await ctx.db
+  const user = await (ctx as any).db
     .query("users")
-    .withIndex("by_email", (q) => q.eq("email", email))
+    .withIndex("by_email", (q: any) => q.eq("email", email))
     .first();
 
   return user ?? null;
@@ -86,17 +86,15 @@ export async function getTestUserByEmail(ctx: QueryCtx | ActionCtx, email: strin
  * @returns The authenticated user with role and assignments
  * @throws Error if not authenticated or user not found
  */
-export async function getCurrentUser(ctx: QueryCtx): Promise<User>;
-export async function getCurrentUser(ctx: ActionCtx): Promise<User>;
 export async function getCurrentUser(ctx: QueryCtx | ActionCtx): Promise<User> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Not authenticated");
   }
 
-  const user = await ctx.db
+  const user = await (ctx as any).db
     .query("users")
-    .withIndex("by_email", (q) => q.eq("email", identity.email ?? ""))
+    .withIndex("by_email", (q: any) => q.eq("email", identity.email ?? ""))
     .first();
 
   if (!user) {
@@ -119,8 +117,6 @@ export async function getCurrentUser(ctx: QueryCtx | ActionCtx): Promise<User> {
  * @returns The authenticated user, or test user as fallback
  * @throws Error if user not found
  */
-export async function getCurrentUserOrTestUser(ctx: QueryCtx, testUserEmail?: string): Promise<User>;
-export async function getCurrentUserOrTestUser(ctx: ActionCtx, testUserEmail?: string): Promise<User>;
 export async function getCurrentUserOrTestUser(ctx: QueryCtx | ActionCtx, testUserEmail?: string): Promise<User> {
   try {
     // Try normal auth first
@@ -128,9 +124,9 @@ export async function getCurrentUserOrTestUser(ctx: QueryCtx | ActionCtx, testUs
   } catch (err) {
     // If testUserEmail is provided, use that specific test user
     if (testUserEmail) {
-      const testUser = await ctx.db
+      const testUser = await (ctx as any).db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", testUserEmail))
+        .withIndex("by_email", (q: any) => q.eq("email", testUserEmail))
         .first();
 
       if (!testUser) {
@@ -145,9 +141,9 @@ export async function getCurrentUserOrTestUser(ctx: QueryCtx | ActionCtx, testUs
     const testUsers = ["student@test.com", "teacher@test.com", "admin@test.com"];
 
     for (const email of testUsers) {
-      const testUser = await ctx.db
+      const testUser = await (ctx as any).db
         .query("users")
-        .withIndex("by_email", (q) => q.eq("email", email))
+        .withIndex("by_email", (q: any) => q.eq("email", email))
         .first();
 
       if (testUser) {
