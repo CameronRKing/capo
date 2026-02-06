@@ -30,13 +30,18 @@ export class ConvexTestContext {
   }
 
   /**
-   * Create a new ConvexTestContext connected to the local backend
+   * Create a new ConvexTestContext connected to the Convex backend
    *
-   * @param url - Convex backend URL (default: localhost:3210)
+   * Uses VITE_CONVEX_URL from environment or defaults to production deployment.
+   *
+   * @param url - Convex backend URL (optional, uses VITE_CONVEX_URL or production)
    * @returns ConvexTestContext instance
    */
-  static async create(url: string = "http://localhost:3210"): Promise<ConvexTestContext> {
-    const client = new ConvexClient(url, {
+  static async create(url?: string): Promise<ConvexTestContext> {
+    // Use provided URL, or VITE_CONVEX_URL from environment, or production default
+    const convexUrl = url || process.env.VITE_CONVEX_URL || "https://charming-bass-286.convex.cloud";
+
+    const client = new ConvexClient(convexUrl, {
       unsavedChangesWarning: false,
     });
 
