@@ -1,0 +1,22 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770239277533,"monotonicTime":10376.356,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@6a288dee48ca13216ee73b2d5b94d0f4"}
+{"type":"screencast-frame","pageId":"page@9d67b676a2690bf82b990916e276b24f","sha1":"page@9d67b676a2690bf82b990916e276b24f-1770239277949.jpeg","width":1280,"height":720,"timestamp":10792.284,"frameSwapWallTime":1770239277728.116}
+{"type":"before","callId":"call@68","startTime":11793.75,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"before","callId":"call@70","startTime":11796.593,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@70","endTime":11796.699}
+{"type":"after","callId":"call@68","endTime":12159.351}
+{"type":"before","callId":"call@91","startTime":12449.852,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@9d67b676a2690bf82b990916e276b24f"}
+{"type":"screencast-frame","pageId":"page@9d67b676a2690bf82b990916e276b24f","sha1":"page@9d67b676a2690bf82b990916e276b24f-1770239279691.jpeg","width":1280,"height":720,"timestamp":12534.384,"frameSwapWallTime":1770239279514.2651}
+{"type":"after","callId":"call@91","endTime":12587.286}
+{"type":"console","messageType":"error","text":"Failed to load resource: the server responded with a status of 504 (Outdated Optimize Dep)","args":[],"location":{"url":"http://localhost:63315/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/deps/react.js?v=f520bb64","lineNumber":0,"columnNumber":0},"time":12654.208,"pageId":"page@9d67b676a2690bf82b990916e276b24f"}
+{"type":"before","callId":"call@105","startTime":12722.056,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@105","endTime":12722.183}
+{"type":"before","callId":"call@107","startTime":12722.375,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[]}}
+{"type":"after","callId":"call@107","endTime":12761.035}
+{"type":"screencast-frame","pageId":"page@9d67b676a2690bf82b990916e276b24f","sha1":"page@9d67b676a2690bf82b990916e276b24f-1770239280126.jpeg","width":1280,"height":720,"timestamp":12969.756,"frameSwapWallTime":1770239280107.7522}
+{"type":"screencast-frame","pageId":"page@9d67b676a2690bf82b990916e276b24f","sha1":"page@9d67b676a2690bf82b990916e276b24f-1770239280336.jpeg","width":1280,"height":720,"timestamp":13179.318,"frameSwapWallTime":1770239280313.0742}
+{"type":"before","callId":"call@496","startTime":23852.251,"class":"Page","method":"close","params":{},"pageId":"page@9d67b676a2690bf82b990916e276b24f"}
+{"type":"console","messageType":"log","text":"[vite] server connection lost. Polling for restart...","args":[{"preview":"[vite] server connection lost. Polling for restart...","value":"[vite] server connection lost. Polling for restart..."}],"location":{"url":"http://localhost:63315/@vite/client","lineNumber":862,"columnNumber":13},"time":23904.67,"pageId":"page@9d67b676a2690bf82b990916e276b24f"}
+{"type":"console","messageType":"log","text":"[vite] server connection lost. Polling for restart...","args":[{"preview":"[vite] server connection lost. Polling for restart...","value":"[vite] server connection lost. Polling for restart..."}],"location":{"url":"http://localhost:63315/__vitest_browser__/tester-k74mgIRa.js","lineNumber":1188,"columnNumber":4},"time":23910.34,"pageId":"page@9d67b676a2690bf82b990916e276b24f"}
+{"type":"event","time":23948.459,"class":"BrowserContext","method":"pageClosed","params":{"pageId":"page@9d67b676a2690bf82b990916e276b24f"}}
+{"type":"after","callId":"call@496","endTime":23948.479}
+{"type":"before","callId":"call@531","startTime":24018.863,"class":"BrowserContext","method":"close","params":{}}

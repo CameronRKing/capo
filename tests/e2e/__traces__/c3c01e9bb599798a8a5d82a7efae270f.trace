@@ -1,0 +1,20 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770239137780,"monotonicTime":7542.416,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@39f1692c242269425ce596771a47a5c8"}
+{"type":"screencast-frame","pageId":"page@da403bba78c2be3e8c3fed63947ef6c1","sha1":"page@da403bba78c2be3e8c3fed63947ef6c1-1770239138631.jpeg","width":1280,"height":720,"timestamp":8392.678,"frameSwapWallTime":1770239137835.49}
+{"type":"before","callId":"call@66","startTime":9513.323,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"before","callId":"call@68","startTime":9513.708,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@68","endTime":9513.787}
+{"type":"after","callId":"call@66","endTime":9651.781}
+{"type":"screencast-frame","pageId":"page@da403bba78c2be3e8c3fed63947ef6c1","sha1":"page@da403bba78c2be3e8c3fed63947ef6c1-1770239140028.jpeg","width":1280,"height":720,"timestamp":9790.449,"frameSwapWallTime":1770239139879.823}
+{"type":"before","callId":"call@85","startTime":9953.482,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@da403bba78c2be3e8c3fed63947ef6c1"}
+{"type":"after","callId":"call@85","endTime":10058.873}
+{"type":"console","messageType":"error","text":"Failed to load resource: the server responded with a status of 504 (Outdated Optimize Dep)","args":[],"location":{"url":"http://localhost:63315/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/deps/react.js?v=55e8f5e3","lineNumber":0,"columnNumber":0},"time":10749.808,"pageId":"page@da403bba78c2be3e8c3fed63947ef6c1"}
+{"type":"before","callId":"call@112","startTime":10942.483,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@112","endTime":10942.614}
+{"type":"before","callId":"call@114","startTime":10942.775,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[]}}
+{"type":"after","callId":"call@114","endTime":11002.963}
+{"type":"before","callId":"call@482","startTime":23828.845,"class":"Page","method":"close","params":{},"pageId":"page@da403bba78c2be3e8c3fed63947ef6c1"}
+{"type":"console","messageType":"log","text":"[vite] server connection lost. Polling for restart...","args":[{"preview":"[vite] server connection lost. Polling for restart...","value":"[vite] server connection lost. Polling for restart..."}],"location":{"url":"http://localhost:63315/@vite/client","lineNumber":862,"columnNumber":13},"time":23851.673,"pageId":"page@da403bba78c2be3e8c3fed63947ef6c1"}
+{"type":"console","messageType":"log","text":"[vite] server connection lost. Polling for restart...","args":[{"preview":"[vite] server connection lost. Polling for restart...","value":"[vite] server connection lost. Polling for restart..."}],"location":{"url":"http://localhost:63315/__vitest_browser__/tester-k74mgIRa.js","lineNumber":1188,"columnNumber":4},"time":23856.263,"pageId":"page@da403bba78c2be3e8c3fed63947ef6c1"}
+{"type":"event","time":23897.415,"class":"BrowserContext","method":"pageClosed","params":{"pageId":"page@da403bba78c2be3e8c3fed63947ef6c1"}}
+{"type":"after","callId":"call@482","endTime":23897.449}
+{"type":"before","callId":"call@516","startTime":23991.527,"class":"BrowserContext","method":"close","params":{}}

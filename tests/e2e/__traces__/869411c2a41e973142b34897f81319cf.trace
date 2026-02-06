@@ -1,0 +1,31 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"chromium","playwrightVersion":"1.58.1","options":{"noDefaultViewport":false,"ignoreHTTPSErrors":true,"selectorEngines":[],"acceptDownloads":"accept","viewport":{"width":1280,"height":720}},"platform":"linux","wallTime":1770239277532,"monotonicTime":10375.858,"sdkLanguage":"javascript","testIdAttributeName":"data-testid","contextId":"browser-context@25a0000797903d29fb5f3a52183fa853"}
+{"type":"screencast-frame","pageId":"page@aae7a99833656e4f4eb684dad22ce240","sha1":"page@aae7a99833656e4f4eb684dad22ce240-1770239277949.jpeg","width":1280,"height":720,"timestamp":10792.168,"frameSwapWallTime":1770239277724.425}
+{"type":"before","callId":"call@80","startTime":11914.731,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"before","callId":"call@82","startTime":11915.632,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@82","endTime":11915.728}
+{"type":"before","callId":"call@84","startTime":11915.854,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@84","endTime":11915.902}
+{"type":"before","callId":"call@86","startTime":11916.049,"title":"Route requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@86","endTime":11916.107}
+{"type":"screencast-frame","pageId":"page@aae7a99833656e4f4eb684dad22ce240","sha1":"page@aae7a99833656e4f4eb684dad22ce240-1770239279216.jpeg","width":1280,"height":720,"timestamp":12059.822,"frameSwapWallTime":1770239278800.281}
+{"type":"after","callId":"call@80","endTime":12159.411}
+{"type":"screencast-frame","pageId":"page@aae7a99833656e4f4eb684dad22ce240","sha1":"page@aae7a99833656e4f4eb684dad22ce240-1770239279399.jpeg","width":1280,"height":720,"timestamp":12242.609,"frameSwapWallTime":1770239279134.721}
+{"type":"before","callId":"call@93","startTime":12451.429,"class":"Route","method":"continue","params":{"isFallback":true},"pageId":"page@aae7a99833656e4f4eb684dad22ce240"}
+{"type":"after","callId":"call@93","endTime":12587.818}
+{"type":"console","messageType":"error","text":"Failed to load resource: the server responded with a status of 504 (Outdated Optimize Dep)","args":[],"location":{"url":"http://localhost:63315/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/deps/react.js?v=f520bb64","lineNumber":0,"columnNumber":0},"time":12653.246,"pageId":"page@aae7a99833656e4f4eb684dad22ce240"}
+{"type":"before","callId":"call@113","startTime":12723.211,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@113","endTime":12723.322}
+{"type":"before","callId":"call@115","startTime":12723.434,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@115","endTime":12723.476}
+{"type":"before","callId":"call@117","startTime":12723.6,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[{"glob":"**/*"}]}}
+{"type":"after","callId":"call@117","endTime":12723.64}
+{"type":"before","callId":"call@119","startTime":12723.79,"title":"Unroute requests","class":"BrowserContext","method":"setNetworkInterceptionPatterns","params":{"patterns":[]}}
+{"type":"after","callId":"call@119","endTime":12761.744}
+{"type":"screencast-frame","pageId":"page@aae7a99833656e4f4eb684dad22ce240","sha1":"page@aae7a99833656e4f4eb684dad22ce240-1770239280185.jpeg","width":1280,"height":720,"timestamp":13028.704,"frameSwapWallTime":1770239280156.435}
+{"type":"screencast-frame","pageId":"page@aae7a99833656e4f4eb684dad22ce240","sha1":"page@aae7a99833656e4f4eb684dad22ce240-1770239280336.jpeg","width":1280,"height":720,"timestamp":13179.486,"frameSwapWallTime":1770239280317.99}
+{"type":"before","callId":"call@498","startTime":23852.528,"class":"Page","method":"close","params":{},"pageId":"page@aae7a99833656e4f4eb684dad22ce240"}
+{"type":"console","messageType":"log","text":"[vite] server connection lost. Polling for restart...","args":[{"preview":"[vite] server connection lost. Polling for restart...","value":"[vite] server connection lost. Polling for restart..."}],"location":{"url":"http://localhost:63315/@vite/client","lineNumber":862,"columnNumber":13},"time":23904.599,"pageId":"page@aae7a99833656e4f4eb684dad22ce240"}
+{"type":"console","messageType":"log","text":"[vite] server connection lost. Polling for restart...","args":[{"preview":"[vite] server connection lost. Polling for restart...","value":"[vite] server connection lost. Polling for restart..."}],"location":{"url":"http://localhost:63315/__vitest_browser__/tester-k74mgIRa.js","lineNumber":1188,"columnNumber":4},"time":23910.4,"pageId":"page@aae7a99833656e4f4eb684dad22ce240"}
+{"type":"event","time":23947.907,"class":"BrowserContext","method":"pageClosed","params":{"pageId":"page@aae7a99833656e4f4eb684dad22ce240"}}
+{"type":"after","callId":"call@498","endTime":23947.929}
+{"type":"before","callId":"call@525","startTime":24018.23,"class":"BrowserContext","method":"close","params":{}}

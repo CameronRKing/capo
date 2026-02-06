@@ -54,7 +54,7 @@ test.describe('Admin Compilation', () => {
     await page.waitForTimeout(1000);
 
     // Look for compile button
-    const compileButton = page.locator('button:has-text("Compile")').or(page.locator('button:has-text("Run")').or(page.locator('[data-testid*="compile"]'));
+    const compileButton = page.locator('button:has-text("Compile")').or(page.locator('button:has-text("Run")')).or(page.locator('[data-testid*="compile"]'));
 
     const buttonCount = await compileButton.count();
 
@@ -100,7 +100,9 @@ test.describe('Admin Compilation', () => {
     await page.waitForTimeout(1000);
 
     // Look for download button
-    const downloadButton = page.locator('button:has-text("Download")').or(page.locator('a:has-text("Download")').or(page.locator('[data-testid*="download"]'));
+    const downloadButton = page.locator('button:has-text("Download")')
+      .or(page.locator('a:has-text("Download")'))
+      .or(page.locator('[data-testid*="download"]'));
 
     const buttonCount = await downloadButton.count();
 

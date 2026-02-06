@@ -82,8 +82,6 @@ export default defineConfig({
       // Skip tests that use convexTest (node mode) instead of browser mode
       "tests/e2e/e2e-04-student-leadership-browser.test.tsx",
       "tests/e2e/e2e-06-stubbed-hiring-compilation-browser.test.tsx",
-      // Skip e2e-reports - uses page.goto() which requires dev server with full routing
-      "tests/e2e/e2e-reports-browser.test.tsx",
       // Skip e2e-05-admin-access - component test with complex mocking, needs rewrite
       "tests/e2e/e2e-05-admin-access-browser.test.tsx",
     ],

@@ -99,7 +99,7 @@ test.describe('Student Leadership Decisions', () => {
     await page.goto('/student/leadership');
 
     // Look for instructions/help text
-    const instructions = page.locator('text=instructions').or(page.locator('text=how to').or(page.locator('[data-testid*="instructions"]'));
+    const instructions = page.locator('text=instructions').or(page.locator('text=how to')).or(page.locator('[data-testid*="instructions"]'));
 
     const count = await instructions.count();
 
