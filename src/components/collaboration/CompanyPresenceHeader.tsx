@@ -90,11 +90,15 @@ export function CompanyPresenceHeader({
     companyId ? { companyId: companyId as Id<"companies"> } : "skip"
   );
 
-  // Calculate offline users
-  const onlineUserIds = new Set(onlineUsers.map((u) => u.user._id));
-  const offlineUsers = (allMembers ?? []).filter(
+  // Handle errors - if presence fails but we have companyId, show degraded state
+  const hasPresenceError = !isLoading && companyId && onlineUsers === undefined;
+  const hasMembersError = companyId && allMembers === null;
+
+  // Calculate offline users (only if no errors)
+  const onlineUserIds = new Set(onlineUsers?.map((u) => u.user._id) ?? []);
+  const offlineUsers = !hasMembersError ? (allMembers ?? []).filter(
     (member) => !onlineUserIds.has(member._id)
-  );
+  ) : [];
 
   // Fixed container height to prevent layout shift
   const containerHeight = avatarSize + 8; // avatar size + padding
@@ -128,6 +132,10 @@ export function CompanyPresenceHeader({
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {isLoading ? (
               "Loading presence..."
+            ) : hasPresenceError ? (
+              <span className="text-yellow-600 dark:text-yellow-400">
+                Presence unavailable
+              </span>
             ) : (
               <>
                 {onlineCount} {onlineCount === 1 ? "teammate" : "teammates"} online
@@ -139,12 +147,12 @@ export function CompanyPresenceHeader({
 
       {/* Online Users FacePile */}
       <div className="flex items-center gap-4">
-        {showOfflineTooltip && offlineUsers.length > 0 && (
+        {!hasPresenceError && !hasMembersError && showOfflineTooltip && offlineUsers.length > 0 && (
           <OfflineTooltip offlineUsers={offlineUsers} />
         )}
 
         <FacePile
-          users={onlineUsers}
+          users={onlineUsers ?? []}
           maxVisible={maxAvatars}
           size={avatarSize}
         />

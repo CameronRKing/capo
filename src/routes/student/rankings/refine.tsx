@@ -29,7 +29,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { RefinementBoard, RankingItem } from "@/components/domain/rankings";
-import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
+import { ErrorPage } from "@/components/ErrorPage";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 /**
@@ -44,6 +44,7 @@ export const Route = createFileRoute("/student/rankings/refine")({
   },
 
   component: RefinementPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 /**

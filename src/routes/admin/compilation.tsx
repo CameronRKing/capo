@@ -16,9 +16,11 @@ import { useState } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/admin/compilation")({
   component: AdminCompilationPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 type Phase = "hiring" | "leadership";

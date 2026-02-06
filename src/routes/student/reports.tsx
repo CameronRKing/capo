@@ -31,6 +31,7 @@ import { ReportCard } from "@/components/reports/ReportCard";
 import { FinancialReport } from "@/components/reports/FinancialReport";
 import { HiringOutcomeReport } from "@/components/reports/HiringOutcomeReport";
 import { RepPerformanceReport } from "@/components/reports/RepPerformanceReport";
+import { ErrorPage } from "@/components/ErrorPage";
 
 /**
  * Loading State Component
@@ -313,6 +314,7 @@ function StudentReportsPage() {
  */
 export const Route = createFileRoute("/student/reports")({
   component: StudentReportsPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 
   // Before load: Check authentication
   beforeLoad: async ({ location, context }) => {

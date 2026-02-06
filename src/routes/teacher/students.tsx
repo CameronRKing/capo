@@ -17,9 +17,11 @@ import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useMemo } from "react";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/teacher/students")({
   component: TeacherStudentsPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 function TeacherStudentsPage() {

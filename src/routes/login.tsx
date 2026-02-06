@@ -10,9 +10,11 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useSearch } from "@tanstack/react-router";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 type TestUser = {

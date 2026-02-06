@@ -71,6 +71,8 @@ export const heartbeat = mutationWithRLS({
     userId: v.id("users"),
     sessionId: v.string(),
     interval: v.number(),
+    // TEMPORARY: Allow test user email for E2E testing
+    __testUserEmail: v.optional(v.string()),
   },
   handler: async (ctx, { roomId, userId, sessionId, interval }) => {
     // Verify user is authenticated and matches the provided userId
@@ -118,6 +120,8 @@ export const heartbeat = mutationWithRLS({
 export const list = queryWithRLS({
   args: {
     roomToken: v.string(),
+    // TEMPORARY: Allow test user email for E2E testing
+    __testUserEmail: v.optional(v.string()),
   },
   handler: async (ctx, { roomToken }) => {
     // Verify authentication (ctx.user provided by RLS wrapper)
@@ -158,6 +162,8 @@ export const list = queryWithRLS({
 export const disconnect = mutationWithRLS({
   args: {
     sessionToken: v.string(),
+    // TEMPORARY: Allow test user email for E2E testing
+    __testUserEmail: v.optional(v.string()),
   },
   handler: async (ctx, { sessionToken }) => {
     // Verify authentication (optional but recommended for audit)

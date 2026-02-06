@@ -58,11 +58,11 @@ export const hiringDecisionSchema = z.object({
     .max(MAX_COMMISSION, `Commission cannot exceed ${MAX_COMMISSION}%`),
 
   benefits: z.enum(["bronze", "silver", "gold"], {
-    errorMap: () => ({ message: "Benefits must be bronze, silver, or gold" }),
+    message: "Benefits must be bronze, silver, or gold",
   }),
 
   travel: z.enum(["reps_pay_own", "monthly_per_diem", "unlimited"], {
-    errorMap: () => ({ message: "Travel must be reps_pay_own, monthly_per_diem, or unlimited" }),
+    message: "Travel must be reps_pay_own, monthly_per_diem, or unlimited",
   }),
 
   perDiem: z
@@ -76,7 +76,7 @@ export const hiringDecisionSchema = z.object({
 
   salesContestType: z
     .enum(["open", "closed"], {
-      errorMap: () => ({ message: "Sales contest type must be open or closed" }),
+      message: "Sales contest type must be open or closed",
     })
     .optional(),
 

@@ -28,6 +28,7 @@ import { api } from "@convex/_generated/api";
 import { useCurrentUser, useQueryWithRLS } from "@/hooks/useCurrentUser";
 import { PhaseIndicator } from "@/components/decisions/PhaseIndicator";
 import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
+import { ErrorState } from "@/components/ui/ErrorState";
 
 /**
  * Loading State Component
@@ -253,6 +254,16 @@ export function StudentDashboardPage() {
     return <LoadingState />;
   }
 
+  // Error handling: Check for null dashboardData after loading
+  if (user.companyId && dashboardData === null) {
+    return (
+      <ErrorState
+        message="Failed to load dashboard data. Please try again."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   // Access control: Students only
   if (user.role !== "student") {
     return <AccessDenied message="This page is only accessible to students." />;
@@ -357,17 +368,29 @@ export function StudentDashboardPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Upcoming Deadlines
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {deadlines?.map((deadline) => (
-              <DeadlineCard
-                key={`${deadline.type}-${deadline.quarter}`}
-                type={deadline.type}
-                quarter={deadline.quarter}
-                status={deadline.status}
-                submittedAt={deadline.submittedAt}
-              />
-            ))}
-          </div>
+          {deadlines === null ? (
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                Unable to load deadlines. This feature may be temporarily unavailable.
+              </p>
+            </div>
+          ) : deadlines && deadlines.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {deadlines.map((deadline) => (
+                <DeadlineCard
+                  key={`${deadline.type}-${deadline.quarter}`}
+                  type={deadline.type}
+                  quarter={deadline.quarter}
+                  status={deadline.status}
+                  submittedAt={deadline.submittedAt}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">No upcoming deadlines</p>
+            </div>
+          )}
         </div>
 
         {/* Quick Links */}
@@ -457,6 +480,7 @@ export function StudentDashboardPage() {
  */
 export const Route = createFileRoute("/student/dashboard")({
   component: StudentDashboardPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 
   // Before load: Check authentication
   beforeLoad: async ({ location, context }) => {

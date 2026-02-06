@@ -7,26 +7,60 @@
 // Access Requests
 export * from "./accessRequests";
 
-// Active Reps
-export * from "./activeReps";
+// Active Reps - renamed to avoid conflicts
+export {
+  listByCompanyQuarter,
+  updateRepSettings,
+  create as createActiveRep,
+  get as getActiveRep,
+} from "./activeReps";
 
-// Companies
-export * from "./companies";
+// Companies - renamed to avoid conflicts
+export {
+  get as getCompany,
+  listByGame,
+  create as createCompany,
+} from "./companies";
 
 // Decisions
-export * from "./leadershipDecisions";
 export * from "./decisions/persistence";
 export * from "./decisions/validators";
 
-// Games
-export * from "./games";
+// Leadership Decisions - renamed to avoid conflicts
+export {
+  get as getLeadershipDecision,
+  create as createLeadershipDecision,
+} from "./leadershipDecisions";
+
+// Games - renamed to avoid conflicts
+export {
+  getGame,
+  getCurrentPhase,
+  getPhaseStatus,
+  create as createGame,
+} from "./games";
 
 // Rankings
 export * from "./rankings";
 export * from "./rankings/algorithm";
 
-// Reports
-export * from "./reports";
+// Reports - renamed to avoid conflicts
+export {
+  getRepPerformanceByRep,
+  listRepPerformanceByCompany,
+  createRepPerformance,
+  getFinancialByCompanyQuarter,
+  listFinancialByGame,
+  createFinancial,
+  getHiringOutcomesByCompany,
+  createHiringOutcomes,
+  getHiringOutcomeReport as getHiringOutcomeReportQLS,
+  getFinancialReport,
+  getRepPerformanceReport,
+  getReportsByCompany,
+  getReportsByGame,
+  listAllReports,
+} from "./reports";
 
 // Resumes
 export * from "./resumes";

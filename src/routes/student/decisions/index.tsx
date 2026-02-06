@@ -33,6 +33,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { HiringDecisionForm } from "@/components/decisions/HiringDecisionForm";
 import { LeadershipDecisionForm } from "@/components/decisions/LeadershipDecisionForm";
 import { PhaseIndicator } from "@/components/decisions/PhaseIndicator";
+import { ErrorPage } from "@/components/ErrorPage";
 
 /**
  * Loading State Component
@@ -189,6 +190,7 @@ export function DecisionsPage() {
  */
 export const Route = createFileRoute("/student/decisions/")({
   component: DecisionsPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 
   // Before load: Check authentication and redirect if needed
   beforeLoad: async ({ location, context }) => {

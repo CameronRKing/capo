@@ -12,6 +12,7 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { LeadershipDecisionForm } from "@/components/decisions/LeadershipDecisionForm";
+import { ErrorPage } from "@/components/ErrorPage";
 import { AlertCircle } from "lucide-react";
 
 /**
@@ -43,6 +44,7 @@ function LeadershipDecisionPage() {
  */
 export const Route = createFileRoute("/student/decisions/leadership")({
   component: LeadershipDecisionPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
   loader: async ({ context }) => {
     // Check authentication
     const user = await context.convex?.query(api.users.getCurrent);

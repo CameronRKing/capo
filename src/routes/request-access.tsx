@@ -11,9 +11,11 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Link } from "@tanstack/react-router";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/request-access")({
   component: RequestAccessPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 export function RequestAccessPage() {

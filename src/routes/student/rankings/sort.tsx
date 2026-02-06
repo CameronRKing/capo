@@ -22,6 +22,7 @@ import { api } from "@convex/_generated/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRankings } from "@/hooks/useRankings";
 import { ResumeCard } from "@/components/rankings/ResumeCard";
+import { ErrorPage } from "@/components/ErrorPage";
 import { CompanyPresenceHeader } from "@/components/collaboration/CompanyPresenceHeader";
 
 /**
@@ -458,4 +459,5 @@ export function RoughSortingPage() {
  */
 export const Route = createFileRoute("/student/rankings/sort")({
   component: RoughSortingPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });

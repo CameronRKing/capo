@@ -12,9 +12,11 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { ApprovalModal } from "@/components/ApprovalModal";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/admin/access")({
   component: AdminAccessPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 type Tab = "pending" | "direct-grant";

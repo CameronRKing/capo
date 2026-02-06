@@ -16,9 +16,11 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { formatDistanceToNow } from "date-fns";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/teacher/dashboard")({
   component: TeacherDashboardPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 
 function TeacherDashboardPage() {

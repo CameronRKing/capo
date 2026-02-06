@@ -31,7 +31,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useQueryWithRLS, useMutationWithRLS } from "./useCurrentUser";
+import { useQueryWithRLS, useMutationWithRLS, useCurrentUser } from "./useCurrentUser";
 
 // Color palette for user cursors and avatars
 // Distinct colors accessible for color-blind users
@@ -73,6 +73,8 @@ export interface UsePresenceReturn {
   getUserColor: (userId: Id<"users">) => string;
   /** Loading state */
   isLoading: boolean;
+  /** Error state - true if heartbeat or presence query failed */
+  hasError: boolean;
 }
 
 /**
@@ -89,6 +91,9 @@ export interface UsePresenceReturn {
 export function usePresence(
   companyId: Id<"companies"> | string | null | undefined
 ): UsePresenceReturn {
+  // Get current user for heartbeat
+  const user = useCurrentUser();
+
   // Mutations with RLS support for test users
   const heartbeat = useMutationWithRLS(api.services.presence.heartbeat);
   const disconnect = useMutationWithRLS(api.services.presence.disconnect);
@@ -103,6 +108,7 @@ export function usePresence(
   const sessionIdRef = useRef<string | null>(null);
   const sessionTokenRef = useRef<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const errorRef = useRef<boolean>(false);
 
   // Initialize session on mount
   useEffect(() => {
@@ -113,12 +119,12 @@ export function usePresence(
 
     // Start heartbeat interval (every 10 seconds)
     intervalRef.current = setInterval(async () => {
-      if (!companyId || !sessionIdRef.current) return;
+      if (!companyId || !sessionIdRef.current || !user) return;
 
       try {
         const sessionToken = await heartbeat({
           roomId: `company:${companyId}`,
-          userId: "current-user-id" as Id<"users">, // Will be replaced with actual auth
+          userId: user._id,
           sessionId: sessionIdRef.current,
           interval: 10000,
         });
@@ -127,18 +133,31 @@ export function usePresence(
         if (sessionToken) {
           sessionTokenRef.current = sessionToken;
         }
+
+        // Clear error on successful heartbeat
+        errorRef.current = false;
       } catch (error) {
         console.error("Presence heartbeat failed:", error);
+        errorRef.current = true;
       }
     }, 10000);
 
     // Initial heartbeat
-    heartbeat({
-      roomId: `company:${companyId}`,
-      userId: "current-user-id" as Id<"users">,
-      sessionId: sessionIdRef.current,
-      interval: 10000,
-    }).catch(console.error);
+    if (user) {
+      heartbeat({
+        roomId: `company:${companyId}`,
+        userId: user._id,
+        sessionId: sessionIdRef.current,
+        interval: 10000,
+      })
+        .then(() => {
+          errorRef.current = false;
+        })
+        .catch((error) => {
+          console.error("Initial presence heartbeat failed:", error);
+          errorRef.current = true;
+        });
+    }
 
     // Cleanup on unmount
     return () => {
@@ -148,10 +167,17 @@ export function usePresence(
 
       // Disconnect from presence
       if (sessionTokenRef.current) {
-        disconnect({ sessionToken: sessionTokenRef.current }).catch(console.error);
+        disconnect({ sessionToken: sessionTokenRef.current })
+          .then(() => {
+            errorRef.current = false;
+          })
+          .catch((error) => {
+            console.error("Presence disconnect failed:", error);
+            // Don't set error on disconnect - we're cleaning up anyway
+          });
       }
     };
-  }, [companyId, heartbeat, disconnect]);
+  }, [companyId, heartbeat, disconnect, user]);
 
   // Process presence data
   const onlineUsers: UserPresence[] = (rawPresence ?? []).map((entry) => ({
@@ -189,5 +215,6 @@ export function usePresence(
     isOnline,
     getUserColor,
     isLoading: rawPresence === undefined,
+    hasError: errorRef.current,
   };
 }

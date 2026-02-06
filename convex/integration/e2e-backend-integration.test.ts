@@ -38,19 +38,23 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should create and retrieve game data", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
       expect(gameId).toBeDefined();
       expect(typeof gameId).toBe("string");
 
-      // Verify we can query the game (using internal helper)
-      const game = await t.db.get(gameId);
+      // Verify we can query the game
+      const game = await t.run(async (ctx) => {
+        return await ctx.db.get(gameId);
+      });
       expect(game).not.toBeNull();
       expect(game?.name).toBe("Test Game");
       expect(game?.currentQuarter).toBe(1);
@@ -62,23 +66,28 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should persist game updates", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
       // Update the game
-      await t.run(api.internal.updateGame, {
-        gameId,
-        currentQuarter: 2,
-        status: "completed",
+      await t.run(async (ctx) => {
+        await ctx.db.patch(gameId, {
+          currentQuarter: 2,
+          status: "completed",
+        });
       });
 
       // Verify updates persisted
-      const game = await t.db.get(gameId);
+      const game = await t.run(async (ctx) => {
+        return await ctx.db.get(gameId);
+      });
       expect(game?.currentQuarter).toBe(2);
       expect(game?.status).toBe("completed");
     });
@@ -86,26 +95,34 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should handle multiple games independently", async () => {
       const t = convexTest(schema);
 
-      const game1 = await t.run(api.internal.createGame, {
-        name: "Game 1",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const game1 = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Game 1",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const game2 = await t.run(api.internal.createGame, {
-        name: "Game 2",
-        currentQuarter: 2,
-        currentPhase: "leadership",
-        length: 6,
-        status: "active",
+      const game2 = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Game 2",
+          currentQuarter: 2,
+          currentPhase: "leadership",
+          length: 6,
+          status: "active",
+        });
       });
 
       expect(game1).not.toBe(game2);
 
-      const g1 = await t.db.get(game1);
-      const g2 = await t.db.get(game2);
+      const g1 = await t.run(async (ctx) => {
+        return await ctx.db.get(game1);
+      });
+      const g2 = await t.run(async (ctx) => {
+        return await ctx.db.get(game2);
+      });
 
       expect(g1?.name).toBe("Game 1");
       expect(g2?.name).toBe("Game 2");
@@ -118,23 +135,29 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should create companies with proper game relationships", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Technology",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Technology",
+          name: "TechCorp",
+        });
       });
 
       expect(companyId).toBeDefined();
 
-      const company = await t.db.get(companyId);
+      const company = await t.run(async (ctx) => {
+        return await ctx.db.get(companyId);
+      });
       expect(company?.gameId).toBe(gameId);
       expect(company?.industry).toBe("Technology");
       expect(company?.name).toBe("TechCorp");
@@ -143,67 +166,87 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should list all companies for a game", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
       const industries = ["Technology", "Healthcare", "Finance"];
       const companyIds: Id<"companies">[] = [];
 
       for (const industry of industries) {
-        const id = await t.run(api.internal.createCompany, {
-          gameId,
-          industry,
-          name: `${industry} Corp`,
+        const id = await t.run(async (ctx) => {
+          return await ctx.db.insert("companies", {
+            gameId,
+            industry,
+            name: `${industry} Corp`,
+          });
         });
-        companyIds.push(id);
+        companyIds.push(id as Id<"companies">);
       }
 
-      // Query companies using the internal query
-      const companies = await t.run(api.internal.listGameCompanies, { gameId });
+      // Query companies directly
+      const companies = await t.run(async (ctx) => {
+        return await ctx.db.query("companies")
+          .withIndex("by_game", (q) => q.eq("gameId", gameId))
+          .collect();
+      });
 
       expect(companies).toHaveLength(3);
-      expect(companies.map((c: any) => c.industry)).toEqual(industries);
+      expect(companies.map((c) => c.industry)).toEqual(industries);
     });
 
     it("should maintain game-company relationship integrity", async () => {
       const t = convexTest(schema);
 
-      const game1 = await t.run(api.internal.createGame, {
-        name: "Game 1",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const game1 = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Game 1",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const game2 = await t.run(api.internal.createGame, {
-        name: "Game 2",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const game2 = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Game 2",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const company1 = await t.run(api.internal.createCompany, {
-        gameId: game1,
-        industry: "Tech",
-        name: "TechCorp",
+      const company1 = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId: game1,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      const company2 = await t.run(api.internal.createCompany, {
-        gameId: game2,
-        industry: "Finance",
-        name: "FinanceCorp",
+      const company2 = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId: game2,
+          industry: "Finance",
+          name: "FinanceCorp",
+        });
       });
 
       // Verify relationships
-      const c1 = await t.db.get(company1);
-      const c2 = await t.db.get(company2);
+      const c1 = await t.run(async (ctx) => {
+        return await ctx.db.get(company1);
+      });
+      const c2 = await t.run(async (ctx) => {
+        return await ctx.db.get(company2);
+      });
 
       expect(c1?.gameId).toBe(game1);
       expect(c2?.gameId).toBe(game2);
@@ -215,45 +258,61 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should create users with proper role assignments", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      const teacherId = await t.run(api.internal.createUser, {
-        name: "Teacher User",
-        email: "teacher@example.com",
-        role: "teacher",
-        gameId,
+      const teacherId = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "Teacher User",
+          email: "teacher@example.com",
+          role: "teacher",
+          gameId,
+        });
       });
 
-      const studentId = await t.run(api.internal.createUser, {
-        name: "Student User",
-        email: "student@example.com",
-        role: "student",
-        gameId,
-        companyId,
+      const studentId = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "Student User",
+          email: "student@example.com",
+          role: "student",
+          gameId,
+          companyId,
+        });
       });
 
-      const adminId = await t.run(api.internal.createUser, {
-        name: "Admin User",
-        email: "admin@example.com",
-        role: "admin",
+      const adminId = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "Admin User",
+          email: "admin@example.com",
+          role: "admin",
+        });
       });
 
       // Verify users
-      const teacher = await t.db.get(teacherId);
-      const student = await t.db.get(studentId);
-      const admin = await t.db.get(adminId);
+      const teacher = await t.run(async (ctx) => {
+        return await ctx.db.get(teacherId);
+      });
+      const student = await t.run(async (ctx) => {
+        return await ctx.db.get(studentId);
+      });
+      const admin = await t.run(async (ctx) => {
+        return await ctx.db.get(adminId);
+      });
 
       expect(teacher?.role).toBe("teacher");
       expect(teacher?.gameId).toBe(gameId);
@@ -271,24 +330,32 @@ describe("Integration Tests: Backend Data Persistence", () => {
 
       const email = "test@example.com";
 
-      const user1 = await t.run(api.internal.createUser, {
-        name: "User 1",
-        email,
-        role: "student",
+      const user1 = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "User 1",
+          email,
+          role: "student",
+        });
       });
 
-      const user2 = await t.run(api.internal.createUser, {
-        name: "User 2",
-        email,
-        role: "teacher",
+      const user2 = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "User 2",
+          email,
+          role: "teacher",
+        });
       });
 
       // Both should be created (schema doesn't enforce uniqueness)
       expect(user1).toBeDefined();
       expect(user2).toBeDefined();
 
-      const u1 = await t.db.get(user1);
-      const u2 = await t.db.get(user2);
+      const u1 = await t.run(async (ctx) => {
+        return await ctx.db.get(user1);
+      });
+      const u2 = await t.run(async (ctx) => {
+        return await ctx.db.get(user2);
+      });
 
       expect(u1?.email).toBe(email);
       expect(u2?.email).toBe(email);
@@ -299,52 +366,62 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should create hiring decisions with all required fields", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      const userId = await t.run(api.internal.createUser, {
-        name: "Test User",
-        email: "user@example.com",
-        role: "student",
-        gameId,
-        companyId,
+      const userId = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "Test User",
+          email: "user@example.com",
+          role: "student",
+          gameId,
+          companyId,
+        });
       });
 
-      const decisionId = await t.run(api.internal.createHiringDecision, {
-        companyId,
-        quarter: 1,
-        salary: 75000,
-        commission: 12,
-        benefits: "gold",
-        travel: "unlimited",
-        hasSalesContest: true,
-        salesContestType: "closed",
-        salesContestThreshold: 20000,
-        trainingProductKnowledge: 30,
-        trainingMarketOrientation: 20,
-        trainingCompanyOrientation: 25,
-        trainingSellingTechniques: 25,
-        numberToHire: 5,
-        firingList: [],
-        isSubmitted: true,
-        submittedBy: userId,
-        submittedAt: Date.now(),
+      const decisionId = await t.run(async (ctx) => {
+        return await ctx.db.insert("hiringDecisions", {
+          companyId,
+          quarter: 1,
+          salary: 75000,
+          commission: 12,
+          benefits: "gold",
+          travel: "unlimited",
+          hasSalesContest: true,
+          salesContestType: "closed",
+          salesContestThreshold: 20000,
+          trainingProductKnowledge: 30,
+          trainingMarketOrientation: 20,
+          trainingCompanyOrientation: 25,
+          trainingSellingTechniques: 25,
+          numberToHire: 5,
+          firingList: [],
+          isSubmitted: true,
+          submittedBy: userId,
+          submittedAt: Date.now(),
+        });
       });
 
       expect(decisionId).toBeDefined();
 
-      const decision = await t.db.get(decisionId);
+      const decision = await t.run(async (ctx) => {
+        return await ctx.db.get(decisionId);
+      });
       expect(decision?.companyId).toBe(companyId);
       expect(decision?.quarter).toBe(1);
       expect(decision?.salary).toBe(75000);
@@ -359,43 +436,52 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should retrieve hiring decision by company and quarter", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      await t.run(api.internal.createHiringDecision, {
-        companyId,
-        quarter: 1,
-        salary: 50000,
-        commission: 10,
-        benefits: "silver",
-        travel: "monthly_per_diem",
-        perDiem: 500,
-        hasSalesContest: false,
-        salesContestType: "open",
-        salesContestThreshold: 10000,
-        trainingProductKnowledge: 25,
-        trainingMarketOrientation: 25,
-        trainingCompanyOrientation: 25,
-        trainingSellingTechniques: 25,
-        numberToHire: 3,
-        firingList: [],
-        isSubmitted: false,
+      await t.run(async (ctx) => {
+        await ctx.db.insert("hiringDecisions", {
+          companyId,
+          quarter: 1,
+          salary: 50000,
+          commission: 10,
+          benefits: "silver",
+          travel: "monthly_per_diem",
+          perDiem: 500,
+          hasSalesContest: false,
+          salesContestType: "open",
+          salesContestThreshold: 10000,
+          trainingProductKnowledge: 25,
+          trainingMarketOrientation: 25,
+          trainingCompanyOrientation: 25,
+          trainingSellingTechniques: 25,
+          numberToHire: 3,
+          firingList: [],
+          isSubmitted: false,
+        });
       });
 
-      const decision = await t.run(api.internal.getHiringDecision, {
-        companyId,
-        quarter: 1,
+      const decision = await t.run(async (ctx) => {
+        return await ctx.db.query("hiringDecisions")
+          .withIndex("by_company_quarter", (q) =>
+            q.eq("companyId", companyId).eq("quarter", 1)
+          )
+          .unique();
       });
 
       expect(decision).not.toBeNull();
@@ -406,23 +492,30 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should return null for non-existent hiring decision", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      const decision = await t.run(api.internal.getHiringDecision, {
-        companyId,
-        quarter: 1,
+      const decision = await t.run(async (ctx) => {
+        return await ctx.db.query("hiringDecisions")
+          .withIndex("by_company_quarter", (q) =>
+            q.eq("companyId", companyId).eq("quarter", 1)
+          )
+          .unique();
       });
 
       expect(decision).toBeNull();
@@ -433,46 +526,56 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should create leadership decisions with all required fields", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "leadership",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "leadership",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      const userId = await t.run(api.internal.createUser, {
-        name: "Test User",
-        email: "user@example.com",
-        role: "student",
-        gameId,
-        companyId,
+      const userId = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "Test User",
+          email: "user@example.com",
+          role: "student",
+          gameId,
+          companyId,
+        });
       });
 
-      const decisionId = await t.run(api.internal.createLeadershipDecision, {
-        companyId,
-        quarter: 1,
-        timeRecruiting: 25,
-        timeMeetingCustomers: 25,
-        timeSalesPlanning: 25,
-        timeAdministrativePaperwork: 25,
-        buyTerritoryReport: true,
-        buyCompensationReport: false,
-        buyPerformanceReport: true,
-        isSubmitted: true,
-        submittedBy: userId,
-        submittedAt: Date.now(),
+      const decisionId = await t.run(async (ctx) => {
+        return await ctx.db.insert("leadershipDecisions", {
+          companyId,
+          quarter: 1,
+          timeRecruiting: 25,
+          timeMeetingCustomers: 25,
+          timeSalesPlanning: 25,
+          timeAdministrativePaperwork: 25,
+          buyTerritoryReport: true,
+          buyCompensationReport: false,
+          buyPerformanceReport: true,
+          isSubmitted: true,
+          submittedBy: userId,
+          submittedAt: Date.now(),
+        });
       });
 
       expect(decisionId).toBeDefined();
 
-      const decision = await t.db.get(decisionId);
+      const decision = await t.run(async (ctx) => {
+        return await ctx.db.get(decisionId);
+      });
       expect(decision?.companyId).toBe(companyId);
       expect(decision?.quarter).toBe(1);
       expect(decision?.timeRecruiting).toBe(25);
@@ -486,75 +589,91 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should maintain company-decision relationships", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const company1 = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const company1 = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      const company2 = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Finance",
-        name: "FinanceCorp",
+      const company2 = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Finance",
+          name: "FinanceCorp",
+        });
       });
 
       // Create decisions for both companies
-      await t.run(api.internal.createHiringDecision, {
-        companyId: company1,
-        quarter: 1,
-        salary: 60000,
-        commission: 10,
-        benefits: "silver",
-        travel: "monthly_per_diem",
-        perDiem: 500,
-        hasSalesContest: true,
-        salesContestType: "open",
-        salesContestThreshold: 15000,
-        trainingProductKnowledge: 25,
-        trainingMarketOrientation: 25,
-        trainingCompanyOrientation: 25,
-        trainingSellingTechniques: 25,
-        numberToHire: 4,
-        firingList: [],
-        isSubmitted: true,
+      await t.run(async (ctx) => {
+        await ctx.db.insert("hiringDecisions", {
+          companyId: company1,
+          quarter: 1,
+          salary: 60000,
+          commission: 10,
+          benefits: "silver",
+          travel: "monthly_per_diem",
+          perDiem: 500,
+          hasSalesContest: true,
+          salesContestType: "open",
+          salesContestThreshold: 15000,
+          trainingProductKnowledge: 25,
+          trainingMarketOrientation: 25,
+          trainingCompanyOrientation: 25,
+          trainingSellingTechniques: 25,
+          numberToHire: 4,
+          firingList: [],
+          isSubmitted: true,
+        });
       });
 
-      await t.run(api.internal.createHiringDecision, {
-        companyId: company2,
-        quarter: 1,
-        salary: 70000,
-        commission: 12,
-        benefits: "gold",
-        travel: "unlimited",
-        hasSalesContest: false,
-        salesContestType: "open",
-        salesContestThreshold: 20000,
-        trainingProductKnowledge: 30,
-        trainingMarketOrientation: 20,
-        trainingCompanyOrientation: 25,
-        trainingSellingTechniques: 25,
-        numberToHire: 5,
-        firingList: [],
-        isSubmitted: true,
+      await t.run(async (ctx) => {
+        await ctx.db.insert("hiringDecisions", {
+          companyId: company2,
+          quarter: 1,
+          salary: 70000,
+          commission: 12,
+          benefits: "gold",
+          travel: "unlimited",
+          hasSalesContest: false,
+          salesContestType: "open",
+          salesContestThreshold: 20000,
+          trainingProductKnowledge: 30,
+          trainingMarketOrientation: 20,
+          trainingCompanyOrientation: 25,
+          trainingSellingTechniques: 25,
+          numberToHire: 5,
+          firingList: [],
+          isSubmitted: true,
+        });
       });
 
       // Verify decisions are linked to correct companies
-      const decision1 = await t.run(api.internal.getHiringDecision, {
-        companyId: company1,
-        quarter: 1,
+      const decision1 = await t.run(async (ctx) => {
+        return await ctx.db.query("hiringDecisions")
+          .withIndex("by_company_quarter", (q) =>
+            q.eq("companyId", company1).eq("quarter", 1)
+          )
+          .unique();
       });
 
-      const decision2 = await t.run(api.internal.getHiringDecision, {
-        companyId: company2,
-        quarter: 1,
+      const decision2 = await t.run(async (ctx) => {
+        return await ctx.db.query("hiringDecisions")
+          .withIndex("by_company_quarter", (q) =>
+            q.eq("companyId", company2).eq("quarter", 1)
+          )
+          .unique();
       });
 
       expect(decision1?.companyId).toBe(company1);
@@ -568,15 +687,19 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should validate game schema fields", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Schema Test Game",
-        currentQuarter: 2,
-        currentPhase: "leadership",
-        length: 8,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Schema Test Game",
+          currentQuarter: 2,
+          currentPhase: "leadership",
+          length: 8,
+          status: "active",
+        });
       });
 
-      const game = await t.db.get(gameId);
+      const game = await t.run(async (ctx) => {
+        return await ctx.db.get(gameId);
+      });
 
       // Verify all expected fields exist
       expect(game).toHaveProperty("_id");
@@ -598,21 +721,27 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should validate company schema fields", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Manufacturing",
-        name: "ManufacturingCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Manufacturing",
+          name: "ManufacturingCorp",
+        });
       });
 
-      const company = await t.db.get(companyId);
+      const company = await t.run(async (ctx) => {
+        return await ctx.db.get(companyId);
+      });
 
       expect(company).toHaveProperty("_id");
       expect(company).toHaveProperty("_creationTime");
@@ -627,13 +756,17 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should validate user schema fields", async () => {
       const t = convexTest(schema);
 
-      const userId = await t.run(api.internal.createUser, {
-        name: "Test User",
-        email: "test@example.com",
-        role: "student",
+      const userId = await t.run(async (ctx) => {
+        return await ctx.db.insert("users", {
+          name: "Test User",
+          email: "test@example.com",
+          role: "student",
+        });
       });
 
-      const user = await t.db.get(userId);
+      const user = await t.run(async (ctx) => {
+        return await ctx.db.get(userId);
+      });
 
       expect(user).toHaveProperty("_id");
       expect(user).toHaveProperty("_creationTime");
@@ -651,43 +784,52 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should validate hiring decision schema fields", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Test Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Test Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
-      await t.run(api.internal.createHiringDecision, {
-        companyId,
-        quarter: 1,
-        salary: 50000,
-        commission: 10,
-        benefits: "silver",
-        travel: "monthly_per_diem",
-        perDiem: 500,
-        hasSalesContest: true,
-        salesContestType: "closed",
-        salesContestThreshold: 10000,
-        trainingProductKnowledge: 25,
-        trainingMarketOrientation: 25,
-        trainingCompanyOrientation: 25,
-        trainingSellingTechniques: 25,
-        numberToHire: 3,
-        firingList: [],
-        isSubmitted: false,
+      await t.run(async (ctx) => {
+        await ctx.db.insert("hiringDecisions", {
+          companyId,
+          quarter: 1,
+          salary: 50000,
+          commission: 10,
+          benefits: "silver",
+          travel: "monthly_per_diem",
+          perDiem: 500,
+          hasSalesContest: true,
+          salesContestType: "closed",
+          salesContestThreshold: 10000,
+          trainingProductKnowledge: 25,
+          trainingMarketOrientation: 25,
+          trainingCompanyOrientation: 25,
+          trainingSellingTechniques: 25,
+          numberToHire: 3,
+          firingList: [],
+          isSubmitted: false,
+        });
       });
 
-      const decision = await t.run(api.internal.getHiringDecision, {
-        companyId,
-        quarter: 1,
+      const decision = await t.run(async (ctx) => {
+        return await ctx.db.query("hiringDecisions")
+          .withIndex("by_company_quarter", (q) =>
+            q.eq("companyId", companyId).eq("quarter", 1)
+          )
+          .unique();
       });
 
       expect(decision).toHaveProperty("_id");
@@ -712,48 +854,57 @@ describe("Integration Tests: Backend Data Persistence", () => {
     it("should handle multi-quarter game progression", async () => {
       const t = convexTest(schema);
 
-      const gameId = await t.run(api.internal.createGame, {
-        name: "Multi-Quarter Game",
-        currentQuarter: 1,
-        currentPhase: "hiring",
-        length: 4,
-        status: "active",
+      const gameId = await t.run(async (ctx) => {
+        return await ctx.db.insert("games", {
+          name: "Multi-Quarter Game",
+          currentQuarter: 1,
+          currentPhase: "hiring",
+          length: 4,
+          status: "active",
+        });
       });
 
-      const companyId = await t.run(api.internal.createCompany, {
-        gameId,
-        industry: "Tech",
-        name: "TechCorp",
+      const companyId = await t.run(async (ctx) => {
+        return await ctx.db.insert("companies", {
+          gameId,
+          industry: "Tech",
+          name: "TechCorp",
+        });
       });
 
       // Create decisions for multiple quarters
       for (let quarter = 1; quarter <= 3; quarter++) {
-        await t.run(api.internal.createHiringDecision, {
-          companyId,
-          quarter,
-          salary: 50000 + quarter * 5000,
-          commission: 10 + quarter,
-          benefits: "silver",
-          travel: "monthly_per_diem",
-          perDiem: 500,
-          hasSalesContest: true,
-          salesContestType: "open",
-          salesContestThreshold: 10000,
-          trainingProductKnowledge: 25,
-          trainingMarketOrientation: 25,
-          trainingCompanyOrientation: 25,
-          trainingSellingTechniques: 25,
-          numberToHire: 3,
-          firingList: [],
-          isSubmitted: true,
+        await t.run(async (ctx) => {
+          await ctx.db.insert("hiringDecisions", {
+            companyId,
+            quarter,
+            salary: 50000 + quarter * 5000,
+            commission: 10 + quarter,
+            benefits: "silver",
+            travel: "monthly_per_diem",
+            perDiem: 500,
+            hasSalesContest: true,
+            salesContestType: "open",
+            salesContestThreshold: 10000,
+            trainingProductKnowledge: 25,
+            trainingMarketOrientation: 25,
+            trainingCompanyOrientation: 25,
+            trainingSellingTechniques: 25,
+            numberToHire: 3,
+            firingList: [],
+            isSubmitted: true,
+          });
         });
       }
 
       // Verify each quarter's decision
       for (let quarter = 1; quarter <= 3; quarter++) {
-        const decision = await t.run(api.internal.getHiringDecision, {
-          companyId,
-          quarter,
+        const decision = await t.run(async (ctx) => {
+          return await ctx.db.query("hiringDecisions")
+            .withIndex("by_company_quarter", (q) =>
+              q.eq("companyId", companyId).eq("quarter", quarter)
+            )
+            .unique();
         });
 
         expect(decision?.quarter).toBe(quarter);
@@ -769,35 +920,41 @@ describe("Integration Tests: Backend Data Persistence", () => {
 
       // Create 2 games with 3 companies each
       for (let i = 0; i < 2; i++) {
-        const gameId = await t.run(api.internal.createGame, {
-          name: `Game ${i + 1}`,
-          currentQuarter: 1,
-          currentPhase: "hiring",
-          length: 4,
-          status: "active",
+        const gameId = await t.run(async (ctx) => {
+          return await ctx.db.insert("games", {
+            name: `Game ${i + 1}`,
+            currentQuarter: 1,
+            currentPhase: "hiring",
+            length: 4,
+            status: "active",
+          });
         });
-        games.push(gameId);
+        games.push(gameId as Id<"games">);
 
         const gameCompanies: Id<"companies">[] = [];
         for (let j = 0; j < 3; j++) {
-          const companyId = await t.run(api.internal.createCompany, {
-            gameId,
-            industry: `Industry ${j + 1}`,
-            name: `Company ${String.fromCharCode(65 + j)}`,
+          const companyId = await t.run(async (ctx) => {
+            return await ctx.db.insert("companies", {
+              gameId,
+              industry: `Industry ${j + 1}`,
+              name: `Company ${String.fromCharCode(65 + j)}`,
+            });
           });
-          gameCompanies.push(companyId);
+          gameCompanies.push(companyId as Id<"companies">);
         }
-        companies.set(gameId, gameCompanies);
+        companies.set(gameId as Id<"games">, gameCompanies);
       }
 
       // Verify all companies are linked to correct games
-      for (const [gameId, companyIds] of companies.entries()) {
-        const gameCompanies = await t.run(api.internal.listGameCompanies, {
-          gameId,
+      for (const [gameId, _companyIds] of companies.entries()) {
+        const gameCompanies = await t.run(async (ctx) => {
+          return await ctx.db.query("companies")
+            .withIndex("by_game", (q) => q.eq("gameId", gameId))
+            .collect();
         });
 
         expect(gameCompanies).toHaveLength(3);
-        gameCompanies.forEach((company: any) => {
+        gameCompanies.forEach((company) => {
           expect(company.gameId).toBe(gameId);
         });
       }

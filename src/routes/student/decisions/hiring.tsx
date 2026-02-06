@@ -24,6 +24,7 @@ import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { HiringDecisionForm } from "@/components/decisions/HiringDecisionForm";
+import { ErrorPage } from "@/components/ErrorPage";
 import { Id } from "@convex/_generated/dataModel";
 
 /**
@@ -163,6 +164,7 @@ export function HiringDecisionPage() {
  */
 export const Route = createFileRoute("/student/decisions/hiring")({
   component: HiringDecisionPage,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
 
   // Before load: Check authentication and redirect if needed
   beforeLoad: async ({ location, context }) => {
