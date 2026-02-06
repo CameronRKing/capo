@@ -2,6 +2,7 @@ const { defineConfig, devices } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './tests/e2e/playwright',
+  testMatch: '**/*.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -19,7 +20,7 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: '/usr/bin/node node_modules/vite/bin/vite.js',
+    command: 'bun run dev:frontend',
     url: 'http://localhost:5173',
     reuseExistingServer: true,
     timeout: 120 * 1000,
