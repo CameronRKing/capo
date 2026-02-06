@@ -19,9 +19,9 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run docker:start:frontend',
+    command: '/usr/bin/node node_modules/vite/bin/vite.js',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120 * 1000,
   },
 });
