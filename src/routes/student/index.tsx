@@ -479,9 +479,10 @@ export function StudentNavigationHubPage() {
   );
 
   // Load phase status
+  // TODO: Fix RLS error in getPhaseStatus - temporarily disabled
   const phaseStatus = useQuery(
     api.games.getPhaseStatus,
-    user?.gameId && user?.companyId ? { gameId: user.gameId, companyId: user.companyId } : "skip"
+    false ? { gameId: user?.gameId || "", companyId: user?.companyId || "" } : "skip"
   );
 
   // Loading state

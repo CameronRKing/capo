@@ -37,3 +37,15 @@ To run E2E tests, use `npm run test:e2e`. NEVER EVER EVER try to start a vitest 
 @memory-bank/playwright-rules.md
 
 @SERVICES.md
+
+
+## Convex Deployment--YOUR RESPONSIBILITY
+Whenever you make a change to the convex backend, you **must** (1) update the integration tests to exercise your change, (2) get all the integration tests passing, && (3) DEPLOY THE CHANGE YOURSELF via `npx convex deploy --typecheck=disable`.
+
+## Convex Seed Data--YOUR RESPONSIBILITY
+If you add a data-seeding function that is necessary for your tests to pass, YOU ARE RESPONSIBLE for (1) deploying it to production, (2) running the seed function YOURSELF, and (3) pickup up where you left off with your tests.
+
+NEVER TELL THE USER TO DEPLOY TO CONVEX OR RUN FUNCTIONS FOR YOU!!!! THESE THINGS ARE YOUR RESPONSIBILITY!!!!
+
+## Deleting Files
+You **CANNOT** use `rm -rf`. THe `-f` flag WILL BE BLOCKED && CAUSE FAILURE. You must use `rm -r` instead.

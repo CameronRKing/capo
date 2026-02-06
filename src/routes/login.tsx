@@ -68,7 +68,7 @@ function LoginPage() {
       case "teacher":
         return <Navigate to="/teacher/dashboard" {...queryParams} />;
       case "student":
-        return <Navigate to="/student" {...queryParams} />;
+        return <Navigate to="/student/" {...queryParams} />;
       default:
         return null;
     }
